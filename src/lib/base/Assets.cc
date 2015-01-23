@@ -20,6 +20,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 #include <game/base/Assets.h>
+#include <game/base/Log.h>
 
 #include <cassert>
 
@@ -40,7 +41,7 @@ namespace game {
       fs::path absolute_path = base / file;
 
       if (fs::is_regular_file(absolute_path)) {
-        std::clog << "Found a resource file: " << absolute_path << std::endl;
+        Log::info(Log::GENERAL, "Found a resource file: %s\n", absolute_path.string().c_str());
         return absolute_path.string();
       }
     }

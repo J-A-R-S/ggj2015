@@ -20,6 +20,7 @@
  * DEALINGS IN THE SOFTWARE.
  */
 #include <game/graphics/Resource.h>
+#include <game/base/Log.h>
 
 #include <boost/filesystem.hpp>
 
@@ -79,7 +80,7 @@ namespace game {
     auto absolute_path = getAbsolutePath(path);
 
     if (absolute_path.empty()) {
-      std::cerr << "Error! Could not find the following file: " << path << std::endl;
+      Log::error(Log::GENERAL, "Could not find the following file: %s\n", path.c_str());
       return nullptr;
     }
 
