@@ -1,5 +1,6 @@
 add_executable(bankrobbery
   main.cc
+  local/Map.cc
 )
 
 target_link_libraries(bankrobbery
