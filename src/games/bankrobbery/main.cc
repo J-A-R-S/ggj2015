@@ -15,7 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <game/base/Random.h>
 #include <game/graphics/Group.h>
+
+#include "local/Map.h"
 
 #include "config.h"
 
@@ -29,15 +32,20 @@ int main() {
   window.setKeyRepeatEnabled(false);
 
   // load resources
-
+  game::Random random(0);
 
   // add entities
-
   game::Group group;
+
+  Map map;
+  map.generate(random);
+  group.addEntity(map);
 
 
   // main loop
   sf::Clock clock;
+
+  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 15 * INITIAL_WIDTH, 15 * INITIAL_HEIGHT });
 
   while (window.isOpen()) {
     // input
@@ -65,6 +73,7 @@ int main() {
     group.update(elapsed.asSeconds());
 
     // render
+    window.setView(view);
     window.clear(sf::Color::White);
     group.render(window);
     window.display();
