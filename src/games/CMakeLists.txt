@@ -7,3 +7,4 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DI
 # add_subdirectory(pong_net)
 # add_subdirectory(template)
 # add_subdirectory(examples)
+add_subdirectory(bankrobbery)
