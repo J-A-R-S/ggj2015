@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <game/base/Event.h>
 #include <game/base/Log.h>
 #include <game/base/Random.h>
 #include <game/graphics/Action.h>
@@ -22,7 +23,7 @@
 #include <game/model/Physics.h>
 
 #include "local/Car.h"
-
+#include "local/Events.h"
 #include "local/Map.h"
 
 #include "config.h"
@@ -73,9 +74,10 @@ int main() {
   game::Log::info(game::Log::GENERAL, "Seed: %u\n", seed);
   game::Random random(seed);
 
-  game::Physics physics;
 
   // add entities
+  game::EventManager events;
+  game::Physics physics;
   game::Group group;
 
   // add map
@@ -90,7 +92,13 @@ int main() {
   // main loop
   sf::Clock clock;
 
-  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 15 * INITIAL_WIDTH, 15 * INITIAL_HEIGHT });
+  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { INITIAL_WIDTH, INITIAL_HEIGHT });
+
+  events.registerHandler<HeroPositionEvent>([&view](game::EventType type, game::Event *event) {
+    auto e = static_cast<HeroPositionEvent*>(event);
+    view.setCenter({ e->pos.x, e->pos.y });
+    return game::EventStatus::KEEP;
+  });
 
   while (window.isOpen()) {
     // input
@@ -125,7 +133,9 @@ int main() {
 
     // update
     sf::Time elapsed = clock.restart();
-    group.update(elapsed.asSeconds());
+    float dt = elapsed.asSeconds();
+    physics.update(dt);
+    group.update(dt);
 
     // render
     window.setView(view);
