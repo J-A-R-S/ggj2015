@@ -65,8 +65,6 @@
   rectangle.setOrigin(rectangle.getLocalBounds().width / 2, rectangle.getLocalBounds().height);
   rectangle.setFillColor(sf::Color::Black);
   rectangle.setPosition(m_position);
-
-  //rectangle.setOrigin(m_position.x + 64/2);
   rectangle.rotate(-(m_angle * (180 / M_PI)));
   window.draw(rectangle);
 
