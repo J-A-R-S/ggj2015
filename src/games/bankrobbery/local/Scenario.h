@@ -20,19 +20,22 @@
 
 #include <game/base/Event.h>
 #include <game/graphics/Entity.h>
+#include <game/graphics/Resource.h>
 
 class Scenario : public game::Entity {
 public:
-  Scenario(game::EventManager& events);
-  
+  Scenario(game::EventManager& events, game::ResourceManager& resources);
+
   virtual void  update  (float dt) override;
   virtual void  render  (sf::RenderWindow& window) override;
-  
+
 private:
   game::EventStatus onHeroPosition(game::EventType type, game::Event* event);
-  
+
   sf::Vector2f m_target;
-  
+
+  sf::Font *m_font;
+  float m_timer;
 };
 
 
