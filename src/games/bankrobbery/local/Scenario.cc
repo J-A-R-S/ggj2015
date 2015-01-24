@@ -17,13 +17,20 @@
  */
 
 #include "Scenario.h"
+
+#include <cstdio>
+#include <array>
+
 #include "Events.h"
 #include "Map.h"
 
-Scenario::Scenario(game::EventManager& events) {
+Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources) {
   events.registerHandler<HeroPositionEvent>(&Scenario::onHeroPosition, this);
-  
+
   m_target.x = m_target.y = (Map::SIZE - 1.5) * 256.0f;
+
+  m_font = resources.getFont("Averia-Bold.ttf");
+  m_timer = 20;
 }
 
 game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* event) {
@@ -31,7 +38,7 @@ game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* ev
 }
 
 void Scenario::update(float dt) {
-  
+  m_timer -= dt;
 }
 
 void Scenario::render(sf::RenderWindow& window) {
@@ -39,7 +46,31 @@ void Scenario::render(sf::RenderWindow& window) {
   shape.setFillColor({0xff, 0x00, 0x00, 0x80});
   shape.setOrigin(100.0, 100.0);
   shape.setPosition(m_target);
-  
+
   window.draw(shape);
-  
+
+  sf::View saved_view = window.getView();
+
+  auto size = window.getSize();
+  sf::View view;
+  view.setCenter(size.x / 2.0f, size.y / 2.0f);
+  view.setSize(size.x, size.y);
+  window.setView(view);
+
+  if (m_timer > 0) {
+    unsigned timer = static_cast<unsigned>(m_timer);
+    std::array<char, 64> buffer;
+    std::snprintf(buffer.data(), buffer.size(), "%.2u", timer);
+
+    sf::Text text;
+    text.setFont(*m_font);
+    text.setCharacterSize(48);
+    text.setColor(sf::Color::Red);
+    text.setString(buffer.data());
+    text.setPosition(0.0f, 0.0f);
+    window.draw(text);
+  }
+
+
+  window.setView(saved_view);
 }

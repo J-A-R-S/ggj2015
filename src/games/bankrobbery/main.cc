@@ -79,8 +79,6 @@ int main() {
   game::ResourceManager resources;
   resources.addSearchDir(GAME_DATADIR);
 
-  sf::Font* font = resources.getFont("Averia-Bold.ttf");
-
   // add entities
   b2Vec2 gravity(0.0f, 0.0f);
   b2World world(gravity);
@@ -98,7 +96,7 @@ int main() {
   group.addEntity(car);
 
   // add Scenario
-  Scenario scenario(events);
+  Scenario scenario(events, resources);
   group.addEntity(scenario);
 
   // main loop
