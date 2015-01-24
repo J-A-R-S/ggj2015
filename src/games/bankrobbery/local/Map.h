@@ -18,15 +18,41 @@
 #ifndef LOCAL_MAP_H
 #define LOCAL_MAP_H
 
-#include <game/base/Random.h>
+#include <array>
 
-class Map {
+#include <SFML/Graphics.hpp>
+
+#include <game/base/Random.h>
+#include <game/graphics/Entity.h>
+
+class Map : public game::Entity {
 public:
+  static constexpr std::size_t NUMBER_OF_STREETS = 15;
+  static constexpr std::size_t SIZE = NUMBER_OF_STREETS * 3;
+
+  enum Kind {
+    STREET,
+    ROADBLOCK,
+    BUILDING,
+    GRASS,
+  };
+
+  struct Block {
+    Kind kind;
+    int number;
+  };
+
+  Map();
 
   void generate(game::Random& random);
 
+  virtual void update(float dt) override;
+
+  virtual void render(sf::RenderWindow& window) override;
+
+private:
+  std::array<std::array<Block, SIZE>, SIZE> m_map;
+  sf::VertexArray m_array;
 };
-
-
 
 #endif // LOCAL_MAP_H

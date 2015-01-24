@@ -27,7 +27,7 @@
 
 /* explicit */ Car::Car()
   : m_speedVector(0.0, 0.0)
-  , m_position(700.0, 700.0)
+  , m_position(0.0, 0.0)
   , m_speed(0)
   , m_angle(0)
 {
@@ -63,7 +63,7 @@
   // Draw the car
   sf::RectangleShape rectangle(sf::Vector2f(64, 128));
   rectangle.setOrigin(rectangle.getLocalBounds().width / 2, rectangle.getLocalBounds().height);
-  rectangle.setFillColor(sf::Color::Black);
+  rectangle.setFillColor(sf::Color::White);
   rectangle.setPosition(m_position);
   rectangle.rotate(-(m_angle * (180 / M_PI)));
   window.draw(rectangle);
