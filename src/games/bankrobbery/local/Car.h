@@ -25,33 +25,58 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <game/base/Event.h>
 #include <game/graphics/Entity.h>
+
+#include <Box2D/Box2D.h>
 
 class Car : public game::Entity {
 public:
-  constexpr static float SPEED_MAX = 130; // km/h
-  constexpr static float SPEED_MIN = -60; // km/h
+  constexpr static float SPEED_MAX = 200;
+  constexpr static float SPEED_MIN = -60;
   constexpr static float SPEED_FACTOR = 1.25;
-  constexpr static float TURN_FACTOR = 0.025;
+  constexpr static float TURN_FACTOR = 0.02;
   constexpr static float FRICTION_FACTOR = 20;
 
-  explicit Car();
+  constexpr static float WIDTH = 128;
+  constexpr static float HEIGHT = 64;
+
+  explicit Car(game::EventManager& events, b2World& world);
 
   virtual void update(float dt) override;
   virtual void render(sf::RenderWindow& window) override;
 
+  enum Movement {
+    ACCELERATE,
+    BRAKE,
+    CRUISE,
+  };
+
   void accelerate();
   void brake();
+  void cruise();
+
+  enum Turn {
+    LEFT,
+    RIGHT,
+    NONE,
+  };
+
   void turnLeft();
   void turnRight();
+  void turnNone();
 
 private:
-  sf::Vector2f m_speedVector;
-  sf::Vector2f m_position;
-  float m_speed;
+  game::EventManager& m_events;
+
+  b2Body *m_body;
+
+  Movement m_movement;
+  Turn m_turn;
+
+  float m_velocity;
   float m_angle;
 
-  void updateSpeedVector();
 };
 
 #endif // LOCAL_CAR_H

@@ -19,13 +19,15 @@
 
 #include <iostream>
 
+#include "Constants.h"
+
 Map::Map()
 : m_array(sf::Quads) {
 }
 
 static constexpr float TILESIZE = 256.0f;
 
-void Map::generate(game::Random& random, game::Physics& physics) {
+void Map::generate(game::Random& random, b2World& world) {
   for (std::size_t i = 0; i < SIZE; ++i) {
     for (std::size_t j = 0; j < SIZE; ++j) {
       auto& block = m_map[i][j];
@@ -118,19 +120,21 @@ void Map::generate(game::Random& random, game::Physics& physics) {
       auto& block = m_map[i][j];
 
       if (block.kind != STREET) {
-        block.body.type = game::Body::STATIC;
-        block.body.pos.x = i * TILESIZE + TILESIZE * 0.5f;
-        block.body.pos.y = j * TILESIZE + TILESIZE * 0.5f;
-        block.body.velocity.x = 0.0f;
-        block.body.velocity.y = 0.0f;
-        block.body.shape.kind = game::Shape::RECTANGLE;
-        block.body.shape.rectangle.width = TILESIZE;
-        block.body.shape.rectangle.height = TILESIZE;
-        block.body.inverse_mass = 0.0f;
-        block.body.restitution = 0.0f;
-        block.body.layers = game::Body::ALL_LAYERS;
+        b2BodyDef def;
+        def.type = b2_staticBody;
+        def.position.x = (i * TILESIZE + TILESIZE * 0.5f) * BOX2D_SCALE;
+        def.position.y = (j * TILESIZE + TILESIZE * 0.5f) * BOX2D_SCALE;
+        auto body = world.CreateBody(&def);
 
-        physics.addBody(&block.body);
+        b2PolygonShape shape;
+        shape.SetAsBox(TILESIZE * BOX2D_SCALE * 0.5f, TILESIZE * BOX2D_SCALE * 0.5f);
+
+        b2FixtureDef fixture;
+        fixture.shape = &shape;
+        fixture.density = 1.0f;
+        fixture.friction = 0.3f;
+
+        body->CreateFixture(&fixture);
       }
     }
   }

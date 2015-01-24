@@ -22,9 +22,10 @@
 
 #include <SFML/Graphics.hpp>
 
+#include <Box2D/Box2D.h>
+
 #include <game/base/Random.h>
 #include <game/graphics/Entity.h>
-#include <game/model/Physics.h>
 
 class Map : public game::Entity {
 public:
@@ -41,12 +42,11 @@ public:
   struct Block {
     Kind kind;
     int number;
-    game::Body body;
   };
 
   Map();
 
-  void generate(game::Random& random, game::Physics& physics);
+  void generate(game::Random& random, b2World& world);
 
   virtual void update(float dt) override;
 
