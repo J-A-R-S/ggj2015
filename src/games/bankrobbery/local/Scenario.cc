@@ -26,22 +26,38 @@
 
 Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources) {
   events.registerHandler<HeroPositionEvent>(&Scenario::onHeroPosition, this);
-
-  m_target.x = m_target.y = (Map::SIZE - 1.5) * 256.0f;
-
   m_font = resources.getFont("Averia-Bold.ttf");
-  m_timer = 20;
 }
 
 game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* event) {
   auto e = static_cast<HeroPositionEvent*>(event);
   m_hero = e->pos;
-  
+
   return game::EventStatus::KEEP;
+}
+
+void Scenario::initStep() {
+  m_message_timer = 5.0f;
+  m_message = m_steps[m_current_step].message;
+
+  m_target = m_steps[m_current_step].target;
+  m_timer = m_steps[m_current_step].timer;
+}
+
+void Scenario::addStep(const Step& step) {
+  m_steps.push_back(step);
+}
+
+void Scenario::start() {
+  assert(!m_steps.empty());
+
+  m_current_step = 0;
+  initStep();
 }
 
 void Scenario::update(float dt) {
   m_timer -= dt;
+  m_message_timer -= dt;
 }
 
 void Scenario::render(sf::RenderWindow& window) {
@@ -60,6 +76,8 @@ void Scenario::render(sf::RenderWindow& window) {
   view.setSize(size.x, size.y);
   window.setView(view);
 
+  // timer
+
   if (m_timer > 0) {
     unsigned timer = static_cast<unsigned>(m_timer);
     std::array<char, 64> buffer;
@@ -73,20 +91,36 @@ void Scenario::render(sf::RenderWindow& window) {
     text.setPosition(0.0f, 0.0f);
     window.draw(text);
   }
-  
-  
+
+  // direction
+
   sf::Vector2f diff = m_target - m_hero;
   float angle = std::atan2(diff.y, diff.x);
-  
+
   static constexpr float TRIANGLE_SIZE = 15;
   sf::CircleShape triangle(TRIANGLE_SIZE, 3);
   float radius = 100.0f;
-  triangle.setPosition(size.x / 2 + radius * std::cos(angle), size.y / 2 + radius * std::sin(angle)); 
-  triangle.setFillColor(sf::Color::Red);
+  triangle.setPosition(size.x / 2 + radius * std::cos(angle), size.y / 2 + radius * std::sin(angle));
+  triangle.setFillColor(sf::Color(0xFF, 0x00, 0x00, 0x80));
   triangle.setOrigin(TRIANGLE_SIZE, TRIANGLE_SIZE);
   triangle.setRotation(angle / M_PI * 180.0 + 90.0);
-  
+
   window.draw(triangle);
-  
+
+  // message
+
+  if (m_message_timer > 0) {
+    sf::Text text;
+    text.setFont(*m_font);
+    text.setCharacterSize(48);
+    text.setColor(sf::Color::Red);
+    text.setString(m_message);
+
+    auto rect = text.getLocalBounds();
+
+    text.setPosition(size.x / 2.0f - rect.width / 2.0f, size.y * 0.8f);
+    window.draw(text);
+  }
+
   window.setView(saved_view);
 }

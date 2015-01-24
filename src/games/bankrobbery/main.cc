@@ -37,6 +37,8 @@ int main() {
 
   sf::RenderWindow window(sf::VideoMode(INITIAL_WIDTH, INITIAL_HEIGHT), "Bank Robbery for Dummies (version " GAME_VERSION ")");
   window.setKeyRepeatEnabled(false);
+//   window.setVerticalSyncEnabled(true);
+//   window.setFramerateLimit(0);
 
   game::Log::setLevel(game::Log::DEBUG);
   game::Log::debug(game::Log::GENERAL, "Path install : %s\n", GAME_DATADIR);
@@ -51,11 +53,13 @@ int main() {
 
   auto carAcceleration = std::make_shared<game::Action>("Car accelerate");
   carAcceleration->addKeyControl(sf::Keyboard::Up);
+  carAcceleration->addKeyControl(sf::Keyboard::X);
   carAcceleration->setContinuous();
   actions.addAction(carAcceleration);
 
   auto carBrake = std::make_shared<game::Action>("Car brake");
   carBrake->addKeyControl(sf::Keyboard::Down);
+  carBrake->addKeyControl(sf::Keyboard::C);
   carBrake->setContinuous();
   actions.addAction(carBrake);
 
@@ -97,6 +101,8 @@ int main() {
 
   // add Scenario
   Scenario scenario(events, resources);
+  scenario.addStep({ "Go!", 30.0, { (Map::SIZE - 1.5) * 256.0f, (Map::SIZE - 1.5) * 256.0f } });
+  scenario.start();
   group.addEntity(scenario);
 
   // main loop
