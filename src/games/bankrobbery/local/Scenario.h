@@ -22,21 +22,38 @@
 #include <game/graphics/Entity.h>
 #include <game/graphics/Resource.h>
 
+struct Step {
+  std::string message;
+  float timer;
+  sf::Vector2f target;
+};
+
 class Scenario : public game::Entity {
 public:
   Scenario(game::EventManager& events, game::ResourceManager& resources);
+
+  void addStep(const Step& step);
+  void start();
 
   virtual void  update  (float dt) override;
   virtual void  render  (sf::RenderWindow& window) override;
 
 private:
   game::EventStatus onHeroPosition(game::EventType type, game::Event* event);
+  void initStep();
 
+private:
+  std::vector<Step> m_steps;
+  unsigned m_current_step;
+
+  float m_message_timer;
+  std::string m_message;
+
+  float m_timer;
   sf::Vector2f m_target;
   sf::Vector2f m_hero;
 
   sf::Font *m_font;
-  float m_timer;
 };
 
 
