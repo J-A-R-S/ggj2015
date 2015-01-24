@@ -19,12 +19,12 @@
 #define LOCAL_EVENTS_H
 
 #include <game/base/Event.h>
-#include <game/base/Vector.h>
+#include <SFML/System.hpp>
 
 struct HeroPositionEvent : game::Event {
   static const game::EventType type = "HeroPosition"_type;
 
-  game::Vector2f pos;
+  sf::Vector2f pos;
 };
 
 
