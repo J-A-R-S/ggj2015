@@ -37,6 +37,7 @@ int main() {
   window.setKeyRepeatEnabled(false);
 
   game::Log::setLevel(game::Log::DEBUG);
+  game::Log::debug(game::Log::GENERAL, "Path install : %s\n", GAME_DATADIR);
 
   // load resources
 
