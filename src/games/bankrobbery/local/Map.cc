@@ -25,7 +25,7 @@ Map::Map()
 
 static constexpr float TILESIZE = 256.0f;
 
-void Map::generate(game::Random& random) {
+void Map::generate(game::Random& random, game::Physics& physics) {
   for (std::size_t i = 0; i < SIZE; ++i) {
     for (std::size_t j = 0; j < SIZE; ++j) {
       auto& block = m_map[i][j];
@@ -112,6 +112,29 @@ void Map::generate(game::Random& random) {
       }
     }
   }
+
+  for (std::size_t i = 0; i < SIZE; ++i) {
+    for (std::size_t j = 0; j < SIZE; ++j) {
+      auto& block = m_map[i][j];
+
+      if (block.kind != STREET) {
+        block.body.type = game::Body::STATIC;
+        block.body.pos.x = i * TILESIZE + TILESIZE * 0.5f;
+        block.body.pos.y = j * TILESIZE + TILESIZE * 0.5f;
+        block.body.velocity.x = 0.0f;
+        block.body.velocity.y = 0.0f;
+        block.body.shape.kind = game::Shape::RECTANGLE;
+        block.body.shape.rectangle.width = TILESIZE;
+        block.body.shape.rectangle.height = TILESIZE;
+        block.body.inverse_mass = 0.0f;
+        block.body.restitution = 0.0f;
+        block.body.layers = game::Body::ALL_LAYERS;
+
+        physics.addBody(&block.body);
+      }
+    }
+  }
+
 }
 
 void Map::update(float dt) {
