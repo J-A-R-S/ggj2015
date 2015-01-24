@@ -20,6 +20,7 @@
 #include <game/base/Random.h>
 #include <game/graphics/Action.h>
 #include <game/graphics/Group.h>
+#include <game/graphics/Resource.h>
 
 #include "local/Car.h"
 #include "local/Events.h"
@@ -74,6 +75,13 @@ int main() {
   game::Log::info(game::Log::GENERAL, "Seed: %u\n", seed);
   game::Random random(seed);
 
+  
+  // create resource manager
+  game::ResourceManager resources;
+  resources.addSearchDir(GAME_DATADIR);
+  
+  sf::Font* font = resources.getFont("Averia-Bold.ttf");
+  
 
   // add entities
   b2Vec2 gravity(0.0f, 0.0f);
