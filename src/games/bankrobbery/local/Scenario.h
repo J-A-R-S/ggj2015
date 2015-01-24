@@ -33,6 +33,7 @@ private:
   game::EventStatus onHeroPosition(game::EventType type, game::Event* event);
 
   sf::Vector2f m_target;
+  sf::Vector2f m_hero;
 
   sf::Font *m_font;
   float m_timer;

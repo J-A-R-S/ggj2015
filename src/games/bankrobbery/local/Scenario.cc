@@ -34,6 +34,9 @@ Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources)
 }
 
 game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* event) {
+  auto e = static_cast<HeroPositionEvent*>(event);
+  m_hero = e->pos;
+  
   return game::EventStatus::KEEP;
 }
 
@@ -70,7 +73,20 @@ void Scenario::render(sf::RenderWindow& window) {
     text.setPosition(0.0f, 0.0f);
     window.draw(text);
   }
-
-
+  
+  
+  sf::Vector2f diff = m_target - m_hero;
+  float angle = std::atan2(diff.y, diff.x);
+  
+  static constexpr float TRIANGLE_SIZE = 15;
+  sf::CircleShape triangle(TRIANGLE_SIZE, 3);
+  float radius = 100.0f;
+  triangle.setPosition(size.x / 2 + radius * std::cos(angle), size.y / 2 + radius * std::sin(angle)); 
+  triangle.setFillColor(sf::Color::Red);
+  triangle.setOrigin(TRIANGLE_SIZE, TRIANGLE_SIZE);
+  triangle.setRotation(angle / M_PI * 180.0 + 90.0);
+  
+  window.draw(triangle);
+  
   window.setView(saved_view);
 }
