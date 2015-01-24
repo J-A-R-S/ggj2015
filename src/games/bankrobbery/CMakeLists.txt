@@ -1,5 +1,6 @@
 add_executable(bankrobbery
   main.cc
+  local/Car.cc
   local/Map.cc
 )
 

@@ -16,6 +16,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include <game/graphics/Group.h>
+#include <game/graphics/Action.h>
+#include <game/base/Log.h>
+
+#include "local/Car.h"
 
 #include "config.h"
 
@@ -28,13 +32,44 @@ int main() {
   sf::RenderWindow window(sf::VideoMode(INITIAL_WIDTH, INITIAL_HEIGHT), "Bank Robbery for Dummies (version " GAME_VERSION ")");
   window.setKeyRepeatEnabled(false);
 
+  game::Log::setLevel(game::Log::DEBUG);
+
   // load resources
 
+  // add actions
+  game::ActionSet actions;
+
+  auto closeWindow = std::make_shared<game::Action>("Close window");
+  closeWindow->addCloseControl();
+  closeWindow->addKeyControl(sf::Keyboard::Escape);
+  actions.addAction(closeWindow);
+
+  auto carAcceleration = std::make_shared<game::Action>("Car accelerate");
+  carAcceleration->addKeyControl(sf::Keyboard::Up);
+  carAcceleration->setContinuous();
+  actions.addAction(carAcceleration);
+
+  auto carBrake = std::make_shared<game::Action>("Car brake");
+  carBrake->addKeyControl(sf::Keyboard::Down);
+  carBrake->setContinuous();
+  actions.addAction(carBrake);
+
+  auto carTurnLeft = std::make_shared<game::Action>("Car turn left");
+  carTurnLeft->addKeyControl(sf::Keyboard::Left);
+  carTurnLeft->setContinuous();
+  actions.addAction(carTurnLeft);
+
+  auto carTurnRight = std::make_shared<game::Action>("Car turn right");
+  carTurnRight->addKeyControl(sf::Keyboard::Right);
+  carTurnRight->setContinuous();
+  actions.addAction(carTurnRight);
 
   // add entities
-
   game::Group group;
 
+  // add cars
+  Car car;
+  group.addEntity(car);
 
   // main loop
   sf::Clock clock;
@@ -43,22 +78,32 @@ int main() {
     // input
     sf::Event event;
 
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        window.close();
-      } else if (event.type == sf::Event::KeyPressed) {
-
-        switch (event.key.code) {
-          case sf::Keyboard::Escape:
-            window.close();
-            break;
-
-          default:
-            break;
-        }
-
-      }
+    while (window.pollEvent(event))	{
+      actions.update(event);
     }
+
+    // actions
+    if (closeWindow->isActive()) {
+		window.close();
+	}
+
+	if (carAcceleration->isActive()) {
+		car.accelerate();
+	}
+
+	if (carBrake->isActive()) {
+        car.brake();
+    }
+
+	if (carTurnLeft->isActive()) {
+        car.turnLeft();
+    }
+
+    if (carTurnRight->isActive()) {
+        car.turnRight();
+    }
+
+	actions.reset();
 
     // update
     sf::Time elapsed = clock.restart();
