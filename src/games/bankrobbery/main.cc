@@ -102,7 +102,7 @@ int main() {
   // main loop
   sf::Clock clock;
 
-  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 1.5f * INITIAL_WIDTH, 1.5f * INITIAL_HEIGHT });
+  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 2.0f * INITIAL_WIDTH, 2.0f * INITIAL_HEIGHT });
 
   events.registerHandler<HeroPositionEvent>([&view](game::EventType type, game::Event *event) {
     auto e = static_cast<HeroPositionEvent*>(event);
@@ -118,7 +118,7 @@ int main() {
       actions.update(event);
 
       if (event.type == sf::Event::Resized) {
-        view.setSize(event.size.width, event.size.height);
+        view.setSize(2.0f * event.size.width, 2.0f * event.size.height);
       }
     }
 
