@@ -27,7 +27,7 @@
 
 /* explicit */ Car::Car()
   : m_speedVector(0.0, 0.0)
-  , m_position(0.0, 0.0)
+  , m_position(500.0, 500.0)
   , m_speed(0)
   , m_angle(0)
 {
@@ -35,8 +35,8 @@
 }
 
 /* virtual */ void Car::update(float dt) {
-  m_position.y = m_position.y - m_speedVector.x * dt;
-  m_position.x = m_position.x - m_speedVector.y * dt;
+  m_position.y = m_position.y + m_speedVector.y * dt;
+  m_position.x = m_position.x + m_speedVector.x * dt;
 
   // Friction
   if (m_speed < 0) {
@@ -61,16 +61,11 @@
 
 /* virtual */ void Car::render(sf::RenderWindow& window) {
   // Draw the car
-  sf::RectangleShape rectangle(sf::Vector2f(64, 128));
+  sf::RectangleShape rectangle(sf::Vector2f(128, 64));
   rectangle.setOrigin(rectangle.getLocalBounds().width / 2, rectangle.getLocalBounds().height);
   rectangle.setFillColor(sf::Color::White);
   rectangle.setPosition(m_position);
-  rectangle.rotate(-(m_angle * (180 / M_PI)));
-  window.draw(rectangle);
-
-  rectangle.setSize(sf::Vector2f(64, 32));
-  rectangle.setFillColor(sf::Color::Blue);
-  rectangle.setPosition(m_position);
+  rectangle.rotate(m_angle * (180 / M_PI));
   window.draw(rectangle);
 }
 
@@ -93,10 +88,10 @@ void Car::turnLeft() {
     return;
   }
 
-  m_angle = m_angle + TURN_FACTOR;
+  m_angle = m_angle - TURN_FACTOR;
 
-  if (m_angle > M_PI * 2) {
-    m_angle = 0;
+  if (m_angle < 0) {
+    m_angle = M_PI * 2;
   }
 }
 
@@ -105,10 +100,10 @@ void Car::turnRight() {
     return;
   }
 
-  m_angle = m_angle - TURN_FACTOR;
+  m_angle = m_angle + TURN_FACTOR;
 
-  if (m_angle < 0) {
-    m_angle = M_PI * 2;
+  if (m_angle > M_PI * 2) {
+    m_angle = 0;
   }
 }
 
