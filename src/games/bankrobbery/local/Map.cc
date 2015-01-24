@@ -18,6 +18,8 @@
 #include "Map.h"
 
 #include <iostream>
+#include <cassert>
+#include <game/base/Log.h>
 
 #include "Constants.h"
 
@@ -31,6 +33,7 @@ Map::Map(game::ResourceManager &resources)
 }
 
 static constexpr float TILESIZE = 256.0f;
+static constexpr float BUILDINGSIZE = 512.0f;
 
 void Map::generate(game::Random& random, b2World& world) {
   for (std::size_t i = 0; i < SIZE; ++i) {
@@ -45,7 +48,7 @@ void Map::generate(game::Random& random, b2World& world) {
         block.number = 0;
       } else {
         block.kind = BUILDING;
-        block.number = 0;
+        block.number = random.computeUniformInteger(0, 2);
       }
     }
   }
@@ -111,12 +114,34 @@ void Map::generate(game::Random& random, b2World& world) {
           break;
 
         case BUILDING:
-          // on récupère un pointeur vers le quad à définir dans le tableau de vertex
-          m_arrayBuilding.append(sf::Vertex({ x1, y1 }, { 0, 0 }));
-          m_arrayBuilding.append(sf::Vertex({ x1, y2 }, { 0, 512 }));
-          m_arrayBuilding.append(sf::Vertex({ x2, y2 }, { 512, 512 }));
-          m_arrayBuilding.append(sf::Vertex({ x2, y1 }, { 512, 0 }));
           break;
+      }
+    }
+
+    for (std::size_t i = 2; i < SIZE - 2; i += 3) {
+      for (std::size_t j = 2; j < SIZE - 2; j += 3) {
+        const auto& block = m_map[i][j];
+
+        float x1 = i * TILESIZE;
+        float x2 = x1 + TILESIZE * 2;
+        float y1 = j * TILESIZE;
+        float y2 = y1 + TILESIZE * 2;
+
+        float u = (block.number % 2) * BUILDINGSIZE;
+        float v = (block.number / 2) * BUILDINGSIZE;
+
+        switch (block.kind) {
+          case BUILDING:
+            // on récupère un pointeur vers le quad à définir dans le tableau de vertex
+            m_arrayBuilding.append(sf::Vertex({ x1, y1 }, { u, v }));
+            m_arrayBuilding.append(sf::Vertex({ x1, y2 }, { u, v + BUILDINGSIZE }));
+            m_arrayBuilding.append(sf::Vertex({ x2, y2 }, { u + BUILDINGSIZE, v + BUILDINGSIZE }));
+            m_arrayBuilding.append(sf::Vertex({ x2, y1 }, { u + BUILDINGSIZE, v }));
+            break;
+
+          default:
+            assert(false);
+        }
       }
     }
   }
