@@ -28,7 +28,7 @@ Map::Map(game::ResourceManager &resources)
 , m_buildingTexture (resources.getTexture("sheet_building.png"))
 , m_roadTexture(resources.getTexture("sheet_road.png"))
 , m_arrayBuilding(sf::Quads)
-, m_array(sf::Quads) {
+, m_arrayStreet(sf::Quads) {
 
 }
 
@@ -81,6 +81,38 @@ void Map::generate(game::Random& random, b2World& world) {
     }
   }
 
+  // Set right number of road
+  for (std::size_t i = 1; i < SIZE - 1; ++i) {
+    for (std::size_t j = 1; j < SIZE - 1; j = j + 3) {
+      auto& block = m_map[i][j];
+
+      if (block.kind == STREET) {
+        if (i % 3 != 1) {
+          block.number = 1;
+        }
+      }
+    }
+  }
+
+  // Set right number of road
+  for (std::size_t i = 1; i < SIZE - 1; i = i + 3) {
+    for (std::size_t j = 2; j < SIZE - 1; ++j) {
+      auto& block = m_map[i][j];
+
+      if (block.kind == STREET) {
+        if (j % 3 != 1) {
+          block.number = 6;
+        }
+      }
+    }
+  }
+
+  // Set corner
+  m_map[1][1].number = 2;
+  m_map[1][SIZE-2].number = 5;
+  m_map[SIZE-2][SIZE-2].number = 4;
+  m_map[SIZE-2][1].number = 3;
+
 
   for (std::size_t i = 0; i < SIZE; ++i) {
     for (std::size_t j = 0; j < SIZE; ++j) {
@@ -91,26 +123,29 @@ void Map::generate(game::Random& random, b2World& world) {
       float y1 = j * TILESIZE;
       float y2 = y1 + TILESIZE;
 
+      float u = (block.number % 4) * TILESIZE;
+      float v = (block.number / 4) * TILESIZE;
+
       switch (block.kind) {
         case GRASS:
-          m_array.append(sf::Vertex({ x1, y1 }, sf::Color::Green));
-          m_array.append(sf::Vertex({ x1, y2 }, sf::Color::Green));
-          m_array.append(sf::Vertex({ x2, y2 }, sf::Color::Green));
-          m_array.append(sf::Vertex({ x2, y1 }, sf::Color::Green));
+          m_arrayStreet.append(sf::Vertex({ x1, y1 }, sf::Color::Green));
+          m_arrayStreet.append(sf::Vertex({ x1, y2 }, sf::Color::Green));
+          m_arrayStreet.append(sf::Vertex({ x2, y2 }, sf::Color::Green));
+          m_arrayStreet.append(sf::Vertex({ x2, y1 }, sf::Color::Green));
           break;
 
         case ROADBLOCK:
-          m_array.append(sf::Vertex({ x1, y1 }, sf::Color::Yellow));
-          m_array.append(sf::Vertex({ x1, y2 }, sf::Color::Yellow));
-          m_array.append(sf::Vertex({ x2, y2 }, sf::Color::Yellow));
-          m_array.append(sf::Vertex({ x2, y1 }, sf::Color::Yellow));
+          m_arrayStreet.append(sf::Vertex({ x1, y1 }, sf::Color::Yellow));
+          m_arrayStreet.append(sf::Vertex({ x1, y2 }, sf::Color::Yellow));
+          m_arrayStreet.append(sf::Vertex({ x2, y2 }, sf::Color::Yellow));
+          m_arrayStreet.append(sf::Vertex({ x2, y1 }, sf::Color::Yellow));
           break;
 
         case STREET:
-          m_array.append(sf::Vertex({ x1, y1 }, sf::Color::Black));
-          m_array.append(sf::Vertex({ x1, y2 }, sf::Color::Black));
-          m_array.append(sf::Vertex({ x2, y2 }, sf::Color::Black));
-          m_array.append(sf::Vertex({ x2, y1 }, sf::Color::Black));
+          m_arrayStreet.append(sf::Vertex({ x1, y1 }, { u, v }));
+          m_arrayStreet.append(sf::Vertex({ x1, y2 }, { u, v + TILESIZE }));
+          m_arrayStreet.append(sf::Vertex({ x2, y2 }, { u + TILESIZE, v + TILESIZE }));
+          m_arrayStreet.append(sf::Vertex({ x2, y1 }, { u + TILESIZE, v }));
           break;
 
         case BUILDING:
@@ -177,6 +212,6 @@ void Map::update(float dt) {
 }
 
 void Map::render(sf::RenderWindow& window) {
-  window.draw(m_array);
+  window.draw(m_arrayStreet, m_roadTexture);
   window.draw(m_arrayBuilding, m_buildingTexture);
 }

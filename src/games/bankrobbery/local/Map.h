@@ -60,7 +60,7 @@ private:
 
   std::array<std::array<Block, SIZE>, SIZE> m_map;
   sf::VertexArray m_arrayBuilding;
-  sf::VertexArray m_array;
+  sf::VertexArray m_arrayStreet;
 };
 
 #endif // LOCAL_MAP_H
