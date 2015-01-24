@@ -39,8 +39,7 @@ int main() {
   window.setKeyRepeatEnabled(false);
 
   game::Log::setLevel(game::Log::DEBUG);
-
-  // load resources
+  game::Log::debug(game::Log::GENERAL, "Path install : %s\n", GAME_DATADIR);
 
   // add actions
   game::ActionSet actions;
@@ -82,7 +81,6 @@ int main() {
 
   sf::Font* font = resources.getFont("Averia-Bold.ttf");
 
-
   // add entities
   b2Vec2 gravity(0.0f, 0.0f);
   b2World world(gravity);
@@ -91,7 +89,7 @@ int main() {
   game::Group group;
 
   // add map
-  Map map;
+  Map map(resources);
   map.generate(random, world);
   group.addEntity(map);
 

@@ -26,6 +26,7 @@
 
 #include <game/base/Random.h>
 #include <game/graphics/Entity.h>
+#include <game/graphics/Resource.h>
 
 class Map : public game::Entity {
 public:
@@ -44,7 +45,7 @@ public:
     int number;
   };
 
-  Map();
+  Map(game::ResourceManager &resources);
 
   void generate(game::Random& random, b2World& world);
 
@@ -53,7 +54,12 @@ public:
   virtual void render(sf::RenderWindow& window) override;
 
 private:
+  game::ResourceManager& m_resources;
+  sf::Texture *m_buildingTexture;
+  sf::Texture *m_roadTexture;
+
   std::array<std::array<Block, SIZE>, SIZE> m_map;
+  sf::VertexArray m_arrayBuilding;
   sf::VertexArray m_array;
 };
 
