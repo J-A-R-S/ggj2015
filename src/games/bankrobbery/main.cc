@@ -18,6 +18,7 @@
 #include <game/base/Log.h>
 #include <game/base/Random.h>
 #include <game/graphics/Group.h>
+#include <game/model/Physics.h>
 
 #include "local/Map.h"
 
@@ -34,6 +35,8 @@ int main() {
 
   game::Log::setLevel(game::Log::INFO);
 
+  game::Physics physics;
+
   // load resources
   std::random_device dev;
   unsigned seed = dev();
@@ -44,7 +47,7 @@ int main() {
   game::Group group;
 
   Map map;
-  map.generate(random);
+  map.generate(random, physics);
   group.addEntity(map);
 
 
