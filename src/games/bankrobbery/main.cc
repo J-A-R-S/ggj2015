@@ -25,6 +25,7 @@
 #include "local/Car.h"
 #include "local/Events.h"
 #include "local/Map.h"
+#include "local/Scenario.h"
 
 #include "config.h"
 
@@ -97,6 +98,10 @@ int main() {
   // add cars
   Car car(events, world);
   group.addEntity(car);
+  
+  // add Scenario
+  Scenario scenario(events);
+  group.addEntity(scenario);
 
   // main loop
   sf::Clock clock;
