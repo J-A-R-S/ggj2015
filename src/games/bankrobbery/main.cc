@@ -21,7 +21,6 @@
 #include <game/graphics/Action.h>
 #include <game/graphics/Group.h>
 #include <game/graphics/Resource.h>
-#include <game/model/Physics.h>
 
 #include "local/Car.h"
 #include "local/Events.h"
@@ -84,23 +83,25 @@ int main() {
   
 
   // add entities
+  b2Vec2 gravity(0.0f, 0.0f);
+  b2World world(gravity);
+
   game::EventManager events;
-  game::Physics physics;
   game::Group group;
 
   // add map
   Map map;
-  map.generate(random, physics);
+  map.generate(random, world);
   group.addEntity(map);
 
   // add cars
-  Car car;
+  Car car(events, world);
   group.addEntity(car);
 
   // main loop
   sf::Clock clock;
 
-  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { INITIAL_WIDTH, INITIAL_HEIGHT });
+  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 1.5f * INITIAL_WIDTH, 1.5f * INITIAL_HEIGHT });
 
   events.registerHandler<HeroPositionEvent>([&view](game::EventType type, game::Event *event) {
     auto e = static_cast<HeroPositionEvent*>(event);
@@ -114,6 +115,10 @@ int main() {
 
     while (window.pollEvent(event))	{
       actions.update(event);
+
+      if (event.type == sf::Event::Resized) {
+        view.setSize(event.size.width, event.size.height);
+      }
     }
 
     // actions
@@ -123,18 +128,18 @@ int main() {
 
     if (carAcceleration->isActive()) {
       car.accelerate();
-    }
-
-    if (carBrake->isActive()) {
+    } else if (carBrake->isActive()) {
       car.brake();
+    } else {
+      car.cruise();
     }
 
     if (carTurnLeft->isActive()) {
       car.turnLeft();
-    }
-
-    if (carTurnRight->isActive()) {
+    } else if (carTurnRight->isActive()) {
       car.turnRight();
+    } else {
+      car.turnNone();
     }
 
     actions.reset();
@@ -142,7 +147,11 @@ int main() {
     // update
     sf::Time elapsed = clock.restart();
     float dt = elapsed.asSeconds();
-    physics.update(dt);
+
+    int32 velocityIterations = 6;
+    int32 positionIterations = 2;
+    world.Step(dt, velocityIterations, positionIterations);
+
     group.update(dt);
 
     // render

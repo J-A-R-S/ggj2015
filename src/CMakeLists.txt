@@ -5,8 +5,12 @@ project(GAME)
 include(CPackConfig.cmake)
 include(GNUInstallDirs)
 
+set(CMAKE_MODULE_PATH
+  ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules")
+
 find_package(Threads)
 find_package(Boost REQUIRED COMPONENTS filesystem system)
+find_package(Box2D REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(SFML2 REQUIRED sfml-graphics>=2.1 sfml-audio>=2.1)

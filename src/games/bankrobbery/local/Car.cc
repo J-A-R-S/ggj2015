@@ -19,95 +19,129 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+#include "Car.h"
 
 #include <cmath>
+#include <iostream>
 
-#include "Car.h"
 #include <game/base/Log.h>
 
-/* explicit */ Car::Car()
-  : m_speedVector(0.0, 0.0)
-  , m_position(500.0, 500.0)
-  , m_speed(0)
+#include "Constants.h"
+#include "Events.h"
+
+/* explicit */ Car::Car(game::EventManager& events, b2World& world)
+  : m_events(events)
+  , m_body(nullptr)
+  , m_movement(CRUISE)
+  , m_turn(NONE)
+  , m_velocity(0)
   , m_angle(0)
 {
-  //ctor
+  b2BodyDef def;
+  def.type = b2_dynamicBody;
+  def.linearDamping = 0.2f;
+  def.position.Set(384.0f * BOX2D_SCALE, 384.0f * BOX2D_SCALE);
+  m_body = world.CreateBody(&def);
+
+  b2PolygonShape shape;
+  shape.SetAsBox(WIDTH * BOX2D_SCALE * 0.5f, HEIGHT * BOX2D_SCALE * 0.5f);
+
+  b2FixtureDef fixture;
+  fixture.shape = &shape;
+  fixture.density = 1.0f;
+  fixture.friction = 0.0f;
+
+  m_body->CreateFixture(&fixture);
 }
 
+static constexpr float HOP = 8.0f;
+static constexpr float TURN = 2.0f;
+
 /* virtual */ void Car::update(float dt) {
-  m_position.y = m_position.y + m_speedVector.y * dt;
-  m_position.x = m_position.x + m_speedVector.x * dt;
+  auto pos = m_body->GetPosition();
 
-  // Friction
-  if (m_speed < 0) {
-    if (m_speed + FRICTION_FACTOR * dt > 0) {
-      m_speed = 0;
-    }
-    else {
-      m_speed = m_speed + FRICTION_FACTOR * dt;
-    }
-  }
-  else if (m_speed > 0) {
-    if (m_speed - FRICTION_FACTOR * dt < 0) {
-      m_speed = 0;
-    }
-    else {
-      m_speed = m_speed - FRICTION_FACTOR * dt;
-    }
+  HeroPositionEvent event;
+  event.pos.x = pos.x / BOX2D_SCALE;
+  event.pos.y = pos.y / BOX2D_SCALE;
+  m_events.triggerEvent(&event);
+
+  float angle = m_body->GetAngle();
+  float abs_velocity = m_body->GetLinearVelocity().Length();
+  float velocity = m_velocity > 0 ? abs_velocity : - abs_velocity;
+
+  switch (m_movement) {
+    case ACCELERATE:
+      velocity += HOP * dt;
+      break;
+
+    case BRAKE:
+      velocity -= HOP * dt;
+      break;
+
+    case CRUISE:
+      break;
   }
 
-  updateSpeedVector();
+  velocity = b2Clamp(velocity, -5.0f, 15.0f);
+
+  float factor = 0.6f * abs_velocity * std::exp(- 0.2 * abs_velocity);
+
+  switch (m_turn) {
+    case LEFT:
+      angle -= dt * TURN * factor;
+      break;
+
+    case RIGHT:
+      angle += dt * TURN * factor;
+      break;
+
+    case NONE:
+      break;
+  }
+
+  m_body->SetTransform(m_body->GetPosition(), angle);
+  m_body->SetAngularVelocity(0.0f);
+
+  b2Rot rot(angle);
+  b2Vec2 vel(velocity, 0.0f);
+  vel = b2Mul(rot, vel);
+
+  m_body->SetLinearVelocity(vel);
+
+  m_velocity = velocity;
 }
 
 /* virtual */ void Car::render(sf::RenderWindow& window) {
-  // Draw the car
-  sf::RectangleShape rectangle(sf::Vector2f(128, 64));
-  rectangle.setOrigin(rectangle.getLocalBounds().width / 2, rectangle.getLocalBounds().height);
+  auto pos = m_body->GetPosition();
+
+  sf::RectangleShape rectangle({ WIDTH, HEIGHT });
+  rectangle.setOrigin(WIDTH / 2.0f, HEIGHT / 2.0f);
   rectangle.setFillColor(sf::Color::White);
-  rectangle.setPosition(m_position);
-  rectangle.rotate(m_angle * (180 / M_PI));
+  rectangle.setPosition(pos.x / BOX2D_SCALE, pos.y / BOX2D_SCALE);
+  rectangle.rotate(m_body->GetAngle() * (180 / M_PI));
   window.draw(rectangle);
 }
 
 void Car::accelerate() {
-
-  if (m_speed < Car::SPEED_MAX) {
-    m_speed += Car::SPEED_FACTOR;
-  }
+  m_movement = ACCELERATE;
 }
 
 void Car::brake() {
+  m_movement = BRAKE;
+}
 
-  if (m_speed > Car::SPEED_MIN) {
-    m_speed -= Car::SPEED_FACTOR*1.20;
-  }
+void Car::cruise() {
+  m_movement = CRUISE;
 }
 
 void Car::turnLeft() {
-  if (m_speed == 0) {
-    return;
-  }
-
-  m_angle = m_angle - TURN_FACTOR;
-
-  if (m_angle < 0) {
-    m_angle = M_PI * 2;
-  }
+  m_turn = LEFT;
 }
 
 void Car::turnRight() {
-  if (m_speed == 0) {
-    return;
-  }
-
-  m_angle = m_angle + TURN_FACTOR;
-
-  if (m_angle > M_PI * 2) {
-    m_angle = 0;
-  }
+  m_turn = RIGHT;
 }
 
-void Car::updateSpeedVector() {
-  m_speedVector.x = std::cos(m_angle) * m_speed;
-  m_speedVector.y = std::sin(m_angle) * m_speed;
+void Car::turnNone() {
+  m_turn = NONE;
 }
