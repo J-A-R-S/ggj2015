@@ -15,10 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include <game/base/Random.h>
-#include <game/graphics/Group.h>
-#include <game/graphics/Action.h>
 #include <game/base/Log.h>
+#include <game/base/Random.h>
+#include <game/graphics/Action.h>
+#include <game/graphics/Group.h>
+#include <game/model/Physics.h>
 
 #include "local/Car.h"
 
@@ -67,14 +68,19 @@ int main() {
   carTurnRight->setContinuous();
   actions.addAction(carTurnRight);
 
-  game::Random random(0);
+  std::random_device dev;
+  unsigned seed = dev();
+  game::Log::info(game::Log::GENERAL, "Seed: %u\n", seed);
+  game::Random random(seed);
+
+  game::Physics physics;
 
   // add entities
   game::Group group;
 
   // add map
   Map map;
-  map.generate(random);
+  map.generate(random, physics);
   group.addEntity(map);
 
   // add cars
@@ -96,26 +102,26 @@ int main() {
 
     // actions
     if (closeWindow->isActive()) {
-		window.close();
-	}
-
-	if (carAcceleration->isActive()) {
-		car.accelerate();
-	}
-
-	if (carBrake->isActive()) {
-        car.brake();
+      window.close();
     }
 
-	if (carTurnLeft->isActive()) {
-        car.turnLeft();
+    if (carAcceleration->isActive()) {
+      car.accelerate();
+    }
+
+    if (carBrake->isActive()) {
+      car.brake();
+    }
+
+    if (carTurnLeft->isActive()) {
+      car.turnLeft();
     }
 
     if (carTurnRight->isActive()) {
-        car.turnRight();
+      car.turnRight();
     }
 
-	actions.reset();
+    actions.reset();
 
     // update
     sf::Time elapsed = clock.restart();

@@ -24,6 +24,7 @@
 
 #include <game/base/Random.h>
 #include <game/graphics/Entity.h>
+#include <game/model/Physics.h>
 
 class Map : public game::Entity {
 public:
@@ -40,11 +41,12 @@ public:
   struct Block {
     Kind kind;
     int number;
+    game::Body body;
   };
 
   Map();
 
-  void generate(game::Random& random);
+  void generate(game::Random& random, game::Physics& physics);
 
   virtual void update(float dt) override;
 
