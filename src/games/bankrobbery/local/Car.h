@@ -27,6 +27,7 @@
 
 #include <game/base/Event.h>
 #include <game/graphics/Entity.h>
+#include <game/graphics/Resource.h>
 
 #include <Box2D/Box2D.h>
 
@@ -41,8 +42,10 @@ public:
   constexpr static float WIDTH = 128;
   constexpr static float HEIGHT = 64;
 
-  explicit Car(game::EventManager& events, b2World& world);
+  explicit Car(game::EventManager& events, game::ResourceManager& resources, b2World& world);
 
+
+  virtual int priority() const override;
   virtual void update(float dt) override;
   virtual void render(sf::RenderWindow& window) override;
 
@@ -69,6 +72,7 @@ public:
 private:
   game::EventManager& m_events;
 
+  sf::Texture *m_texture;
   b2Body *m_body;
 
   Movement m_movement;

@@ -29,22 +29,42 @@
 #include "Constants.h"
 #include "Events.h"
 
-/* explicit */ Car::Car(game::EventManager& events, b2World& world)
+/* explicit */ Car::Car(game::EventManager& events, game::ResourceManager& resources, b2World& world)
   : m_events(events)
+  , m_texture(nullptr)
   , m_body(nullptr)
   , m_movement(CRUISE)
   , m_turn(NONE)
   , m_velocity(0)
   , m_angle(0)
 {
+  m_texture = resources.getTexture("sheet_car.png");
+  m_texture->setSmooth(true);
+
   b2BodyDef def;
   def.type = b2_dynamicBody;
   def.linearDamping = 0.2f;
   def.position.Set(384.0f * BOX2D_SCALE, 384.0f * BOX2D_SCALE);
   m_body = world.CreateBody(&def);
 
+  float half_w = WIDTH * BOX2D_SCALE * 0.5f;
+  float half_h = HEIGHT * BOX2D_SCALE * 0.5f;
+
+  static constexpr float X = 0.8f;
+
+  b2Vec2 vertices[8];
+  vertices[0].Set(- half_w, X * half_h);
+  vertices[1].Set(- X * half_w, half_h);
+  vertices[2].Set(  X * half_w, half_h);
+  vertices[3].Set(  half_w, X * half_h);
+  vertices[4].Set(  half_w, - X * half_h);
+  vertices[5].Set(  X * half_w, - half_h);
+  vertices[6].Set(- X * half_w, - half_h);
+  vertices[7].Set(- half_w, - X * half_h);
+
   b2PolygonShape shape;
-  shape.SetAsBox(WIDTH * BOX2D_SCALE * 0.5f, HEIGHT * BOX2D_SCALE * 0.5f);
+  shape.Set(vertices, 8);
+//   shape.SetAsBox(WIDTH * BOX2D_SCALE * 0.5f, HEIGHT * BOX2D_SCALE * 0.5f);
 
   b2FixtureDef fixture;
   fixture.shape = &shape;
@@ -52,6 +72,11 @@
   fixture.friction = 0.0f;
 
   m_body->CreateFixture(&fixture);
+}
+
+
+int Car::priority() const {
+  return 20;
 }
 
 static constexpr float HOP = 8.0f;
@@ -114,12 +139,19 @@ static constexpr float TURN = 2.0f;
 /* virtual */ void Car::render(sf::RenderWindow& window) {
   auto pos = m_body->GetPosition();
 
-  sf::RectangleShape rectangle({ WIDTH, HEIGHT });
-  rectangle.setOrigin(WIDTH / 2.0f, HEIGHT / 2.0f);
-  rectangle.setFillColor(sf::Color::White);
-  rectangle.setPosition(pos.x / BOX2D_SCALE, pos.y / BOX2D_SCALE);
-  rectangle.rotate(m_body->GetAngle() * (180 / M_PI));
-  window.draw(rectangle);
+  sf::IntRect textureRect;
+  textureRect.left = 1 * WIDTH;
+  textureRect.top = 1 * HEIGHT;
+  textureRect.width = WIDTH;
+  textureRect.height = HEIGHT;
+
+  sf::Sprite sprite(*m_texture);
+  sprite.setTextureRect(textureRect);
+  sprite.setOrigin(WIDTH / 2.0f, HEIGHT / 2.0f);
+  sprite.setPosition(pos.x / BOX2D_SCALE, pos.y / BOX2D_SCALE);
+  sprite.rotate(m_body->GetAngle() * (180 / M_PI));
+
+  window.draw(sprite);
 }
 
 void Car::accelerate() {

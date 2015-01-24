@@ -75,13 +75,13 @@ int main() {
   game::Log::info(game::Log::GENERAL, "Seed: %u\n", seed);
   game::Random random(seed);
 
-  
+
   // create resource manager
   game::ResourceManager resources;
   resources.addSearchDir(GAME_DATADIR);
-  
+
   sf::Font* font = resources.getFont("Averia-Bold.ttf");
-  
+
 
   // add entities
   b2Vec2 gravity(0.0f, 0.0f);
@@ -96,9 +96,9 @@ int main() {
   group.addEntity(map);
 
   // add cars
-  Car car(events, world);
+  Car car(events, resources, world);
   group.addEntity(car);
-  
+
   // add Scenario
   Scenario scenario(events);
   group.addEntity(scenario);
