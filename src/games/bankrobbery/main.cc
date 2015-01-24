@@ -15,6 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include <game/base/Log.h>
 #include <game/base/Random.h>
 #include <game/graphics/Group.h>
 
@@ -31,8 +32,13 @@ int main() {
   sf::RenderWindow window(sf::VideoMode(INITIAL_WIDTH, INITIAL_HEIGHT), "Bank Robbery for Dummies (version " GAME_VERSION ")");
   window.setKeyRepeatEnabled(false);
 
+  game::Log::setLevel(game::Log::INFO);
+
   // load resources
-  game::Random random(0);
+  std::random_device dev;
+  unsigned seed = dev();
+  game::Log::info(game::Log::GENERAL, "Seed: %u\n", seed);
+  game::Random random(seed);
 
   // add entities
   game::Group group;
