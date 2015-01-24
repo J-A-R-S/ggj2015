@@ -5,6 +5,7 @@ add_executable(bankrobbery
   main.cc
   local/Car.cc
   local/Map.cc
+  local/Scenario.cc
 )
 
 target_link_libraries(bankrobbery
