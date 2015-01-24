@@ -64,6 +64,44 @@ void Map::generate(game::Random& random, b2World& world) {
 
         m_map[x][y1].kind = ROADBLOCK;
         m_map[x][y2].kind = ROADBLOCK;
+
+        int typeBlock = random.computeUniformInteger(0, 99);
+
+        if (typeBlock >= 0 && typeBlock < 10) {
+          typeBlock = random.computeUniformInteger(7, 9);
+          m_map[x][y1].number = typeBlock;
+
+          switch (typeBlock) {
+            case 7:
+              typeBlock = random.computeUniformInteger(8, 9);
+              m_map[x][y2].number = typeBlock;
+              break;
+
+            case 8:
+              typeBlock = random.computeUniformInteger(0, 1);
+
+              if (typeBlock == 0) {
+                m_map[x][y2].number = 7;
+              }
+              else {
+                m_map[x][y2].number = 9;
+              }
+
+              break;
+
+            case 9:
+              typeBlock = random.computeUniformInteger(7, 8);
+              m_map[x][y2].number = typeBlock;
+              break;
+
+            default:
+              assert(false);
+          }
+        }
+        else {
+          m_map[x][y1].number = 13;
+          m_map[x][y2].number = 14;
+        }
       }
     }
   }
@@ -77,6 +115,44 @@ void Map::generate(game::Random& random, b2World& world) {
 
         m_map[x1][y].kind = ROADBLOCK;
         m_map[x2][y].kind = ROADBLOCK;
+
+        int typeBlock = random.computeUniformInteger(0, 99);
+
+        if (typeBlock >= 0 && typeBlock < 10) {
+          typeBlock = random.computeUniformInteger(10, 12);
+          m_map[x1][y].number = typeBlock;
+
+          switch (typeBlock) {
+            case 10:
+              typeBlock = random.computeUniformInteger(11, 12);
+              m_map[x2][y].number = typeBlock;
+              break;
+
+            case 11:
+              typeBlock = random.computeUniformInteger(10, 12);
+
+              if (typeBlock == 0) {
+                m_map[x2][y].number = 10;
+              }
+              else {
+                m_map[x2][y].number = 12;
+              }
+
+              break;
+
+            case 12:
+              typeBlock = random.computeUniformInteger(10, 11);
+              m_map[x2][y].number = typeBlock;
+              break;
+
+            default:
+              assert(false);
+          }
+        }
+        else {
+          m_map[x1][y].number = 13;
+          m_map[x2][y].number = 14;
+        }
       }
     }
   }
@@ -123,8 +199,8 @@ void Map::generate(game::Random& random, b2World& world) {
       float y1 = j * TILESIZE;
       float y2 = y1 + TILESIZE;
 
-      float u = (block.number % 4) * TILESIZE;
-      float v = (block.number / 4) * TILESIZE;
+      float u = (block.number % 5) * TILESIZE;
+      float v = (block.number / 5) * TILESIZE;
 
       switch (block.kind) {
         case GRASS:
@@ -134,14 +210,8 @@ void Map::generate(game::Random& random, b2World& world) {
           m_arrayStreet.append(sf::Vertex({ x2, y1 }, sf::Color::Green));
           break;
 
-        case ROADBLOCK:
-          m_arrayStreet.append(sf::Vertex({ x1, y1 }, sf::Color::Yellow));
-          m_arrayStreet.append(sf::Vertex({ x1, y2 }, sf::Color::Yellow));
-          m_arrayStreet.append(sf::Vertex({ x2, y2 }, sf::Color::Yellow));
-          m_arrayStreet.append(sf::Vertex({ x2, y1 }, sf::Color::Yellow));
-          break;
-
         case STREET:
+        case ROADBLOCK:
           m_arrayStreet.append(sf::Vertex({ x1, y1 }, { u, v }));
           m_arrayStreet.append(sf::Vertex({ x1, y2 }, { u, v + TILESIZE }));
           m_arrayStreet.append(sf::Vertex({ x2, y2 }, { u + TILESIZE, v + TILESIZE }));
