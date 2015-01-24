@@ -21,8 +21,13 @@
 
 #include "Constants.h"
 
-Map::Map()
-: m_array(sf::Quads) {
+Map::Map(game::ResourceManager &resources)
+: m_resources(resources)
+, m_buildingTexture (resources.getTexture("sheet_building.png"))
+, m_roadTexture(resources.getTexture("sheet_road.png"))
+, m_arrayBuilding(sf::Quads)
+, m_array(sf::Quads) {
+
 }
 
 static constexpr float TILESIZE = 256.0f;
@@ -106,10 +111,11 @@ void Map::generate(game::Random& random, b2World& world) {
           break;
 
         case BUILDING:
-          m_array.append(sf::Vertex({ x1, y1 }, sf::Color::Red));
-          m_array.append(sf::Vertex({ x1, y2 }, sf::Color::Red));
-          m_array.append(sf::Vertex({ x2, y2 }, sf::Color::Red));
-          m_array.append(sf::Vertex({ x2, y1 }, sf::Color::Red));
+          // on récupère un pointeur vers le quad à définir dans le tableau de vertex
+          m_arrayBuilding.append(sf::Vertex({ x1, y1 }, { 0, 0 }));
+          m_arrayBuilding.append(sf::Vertex({ x1, y2 }, { 0, 512 }));
+          m_arrayBuilding.append(sf::Vertex({ x2, y2 }, { 512, 512 }));
+          m_arrayBuilding.append(sf::Vertex({ x2, y1 }, { 512, 0 }));
           break;
       }
     }
@@ -147,4 +153,5 @@ void Map::update(float dt) {
 
 void Map::render(sf::RenderWindow& window) {
   window.draw(m_array);
+  window.draw(m_arrayBuilding, m_buildingTexture);
 }
