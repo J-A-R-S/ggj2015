@@ -26,7 +26,7 @@ install(
 )
 
 install(
-  DIRECTORY "${CMAKE_SOURCE_DIR}/share/foo"
+  DIRECTORY "${CMAKE_SOURCE_DIR}/share/bankrobbery"
   DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/games"
 )
 
