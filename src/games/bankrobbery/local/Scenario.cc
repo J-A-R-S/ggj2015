@@ -33,6 +33,7 @@ Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources)
   assert(m_font);
   m_floTexture = resources.getTexture("flo.png");
   m_roxyTexture = resources.getTexture("roxy.png");
+  m_status = RUNNING;
 }
 
 static constexpr float DISTANCE = 100.0f;
@@ -50,7 +51,15 @@ game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* ev
 
     if (m_current_step < m_steps.size()) {
       initStep();
+    } else {
+      m_active = false;
+      m_character = Flo;
+      m_message = "Yeah! A new carrier!";
+      m_message_timer = 5.0f;
+      m_status = SUCCESS;
     }
+
+
   }
 
   return game::EventStatus::KEEP;
@@ -101,9 +110,19 @@ void Scenario::update(float dt) {
   m_target_timer -= dt;
   m_message_timer -= dt;
 
-  if (m_message_timer < 0 && !m_active) {
-    m_current_step++;
-    initStep();
+  if (!m_active) {
+    if (m_status == RUNNING && m_message_timer < 0) {
+      m_current_step++;
+      initStep();
+    }
+  } else {
+    if (m_target_timer < 0) {
+      m_active = false;
+      m_character = Flo;
+      m_message = "I should really do something\nuseful with my life!";
+      m_message_timer = 5.0f;
+      m_status = FAIL;
+    }
   }
 }
 
@@ -115,7 +134,7 @@ void Scenario::render(sf::RenderWindow& window) {
     shape.setPosition(m_target);
 
     window.draw(shape);
-    
+
     // direction
     sf::Vector2f diff = m_target - m_hero;
     float angle = std::atan2(diff.y, diff.x);

@@ -24,11 +24,18 @@
 
 struct Step;
 
+
 class Scenario : public game::Entity {
 public:
   enum Character {
     Flo,
     Roxy,
+  };
+
+  enum Status {
+    RUNNING,
+    FAIL,
+    SUCCESS,
   };
 
   Scenario(game::EventManager& events, game::ResourceManager& resources);
@@ -61,6 +68,8 @@ private:
   sf::Font *m_font;
   sf::Texture *m_floTexture;
   sf::Texture *m_roxyTexture;
+
+  Status m_status;
 };
 
 struct Step {
