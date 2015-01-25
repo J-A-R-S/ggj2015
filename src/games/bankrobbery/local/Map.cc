@@ -267,18 +267,22 @@ void Map::generate(game::Random& random, b2World& world) {
   if (m_map[x - 1][y].kind == STREET) {
     m_homeGoal.x = (x - 1 + 0.5f) * TILESIZE;
     m_homeGoal.y = (y + 0.5f) * TILESIZE;
+    m_homeAngle = M_PI / 2;
   }
-  else if (m_map[x][y - 1].kind == STREET) {
-    m_homeGoal.x = (x + 0.5f) * TILESIZE;
+  else if (m_map[x + 1][y - 1].kind == STREET) {
+    m_homeGoal.x = (x + 1 + 0.5f) * TILESIZE;
     m_homeGoal.y = (y - 1 + 0.5f) * TILESIZE;
+    m_homeAngle = M_PI;
   }
   else if (m_map[x][y + 2].kind == STREET) {
     m_homeGoal.x = (x + 0.5f) * TILESIZE;
     m_homeGoal.y = (y + 2 + 0.5f) * TILESIZE;
+    m_homeAngle = 0;
   }
   else if (m_map[x + 2][y + 1].kind == STREET) {
     m_homeGoal.x = (x + 2 + 0.5f) * TILESIZE;
     m_homeGoal.y = (y + 1 + 0.5f) * TILESIZE;
+    m_homeAngle = 3 * M_PI / 2;
   }
   else {
     assert(false);
@@ -492,11 +496,58 @@ sf::Vector2f Map::getRocketStoreGoal() {
   return m_rocketStoreGoal;
 }
 
-bool Map::checkPosition(std::vector<sf::Vector2i> vector, int x, int y) {
+bool Map::checkPosition(std::vector<sf::Vector2i> vector, int x, int y) const {
   bool found = false;
   for (std::size_t i = 0; i < vector.size() && !found; ++i) {
     found = vector[i].x == x && vector[i].y == y;
   }
 
   return found;
+}
+
+std::vector<std::tuple<sf::Vector2f, float>> Map::getCarsPositions(unsigned n, game::Random& random) const {
+  std::vector<std::tuple<sf::Vector2f, float>> cars;
+
+  std::vector<sf::Vector2i> check;
+
+  for (unsigned k = 0; k < n; ++k) {
+
+    int i, j;
+    do {
+      i = random.computeUniformInteger(1, SIZE - 1);
+      j = random.computeUniformInteger(1, SIZE - 1);
+    } while (m_map[i][j].kind != STREET || m_map[i][j].number == 0 || checkPosition(check, i, j));
+
+    check.push_back({ i, j });
+
+    float x, y, angle;
+
+    if (i % 3 == 1) {
+      if (random.computeBernoulli(0.5)) {
+        x = (i + 0.875) * TILESIZE;
+        y = (j + 0.5) * TILESIZE;
+        angle = 3 * M_PI / 2;
+      } else {
+        x = (i + 0.125) * TILESIZE;
+        y = (j + 0.5) * TILESIZE;
+        angle = M_PI / 2;
+      }
+    } else {
+      assert(j % 3 == 1);
+
+      if (random.computeBernoulli(0.5)) {
+        x = (i + 0.5) * TILESIZE;
+        y = (j + 0.875) * TILESIZE;
+        angle = 0;
+      } else {
+        x = (i + 0.5) * TILESIZE;
+        y = (j + 0.125) * TILESIZE;
+        angle = M_PI;
+      }
+    }
+
+    cars.push_back(std::make_tuple(sf::Vector2f(x, y), angle));
+  }
+
+  return cars;
 }

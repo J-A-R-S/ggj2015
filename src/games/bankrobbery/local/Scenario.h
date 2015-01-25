@@ -37,6 +37,7 @@ public:
   void addStep(Character character, float message_timer, const std::string& message, float target_timer, const sf::Vector2f& target);
   void start();
 
+  virtual int priority() const override;
   virtual void update(float dt) override;
   virtual void render(sf::RenderWindow& window) override;
 
