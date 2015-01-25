@@ -26,12 +26,25 @@
 
 Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources) {
   events.registerHandler<HeroPositionEvent>(&Scenario::onHeroPosition, this);
-  m_font = resources.getFont("Averia-Bold.ttf");
+  m_font = resources.getFont("Averia-Regular.ttf");
 }
+
+static constexpr float DISTANCE = 100.0f;
 
 game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* event) {
   auto e = static_cast<HeroPositionEvent*>(event);
   m_hero = e->pos;
+
+  sf::Vector2f diff = m_target - m_hero;
+  float distance = std::sqrt(diff.x * diff.x + diff.y * diff.y);
+
+  if (distance < DISTANCE) {
+    m_current_step++;
+
+    if (m_current_step < m_steps.size()) {
+      initStep();
+    }
+  }
 
   return game::EventStatus::KEEP;
 }
@@ -112,13 +125,23 @@ void Scenario::render(sf::RenderWindow& window) {
   if (m_message_timer > 0) {
     sf::Text text;
     text.setFont(*m_font);
-    text.setCharacterSize(48);
+    text.setCharacterSize(32);
     text.setColor(sf::Color::Red);
     text.setString(m_message);
 
-    auto rect = text.getLocalBounds();
+    auto bounds = text.getLocalBounds();
 
-    text.setPosition(size.x / 2.0f - rect.width / 2.0f, size.y * 0.8f);
+    text.setOrigin(bounds.width / 2.0f, 0.0f);
+    text.setPosition(size.x / 2.0f, size.y * 0.8f);
+
+    static constexpr float PADDING = 20.0f;
+
+    sf::RectangleShape rectangle({ bounds.width + 2 * PADDING, bounds.height + 2 * PADDING });
+    rectangle.setOrigin(bounds.width / 2.0f + PADDING, PADDING);
+    rectangle.setPosition(text.getPosition());
+    rectangle.setFillColor({ 0x00, 0x00, 0x00, 0x80 });
+    window.draw(rectangle);
+
     window.draw(text);
   }
 

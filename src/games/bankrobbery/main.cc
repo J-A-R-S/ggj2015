@@ -101,7 +101,8 @@ int main() {
 
   // add Scenario
   Scenario scenario(events, resources);
-  scenario.addStep({ "Go!", 30.0, { (Map::SIZE - 1.5) * 256.0f, (Map::SIZE - 1.5) * 256.0f } });
+  scenario.addStep({ "Great, that's a nice day.\nPerfect day to go robbing a bank !", 30.0, { (Map::SIZE - 1.5) * 256.0f, (Map::SIZE - 1.5) * 256.0f } });
+  scenario.addStep({ "Alright ! Now, I need a gun\nand ammunitions, just in case.", 30.0, { 4.5 * 256.0f, 9.5 * 256.0f } });
   scenario.start();
   group.addEntity(scenario);
 
