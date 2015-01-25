@@ -95,8 +95,26 @@ int main() {
   group.addEntity(map);
 
   // add cars
-  HeroCar car(events, resources, world, map.getHomeGoal());
+  HeroCar car(events, resources, world, map.getHomeGoal(), map.getHomeAngle());
   group.addEntity(car);
+
+  std::vector<OtherCar> otherCars;
+
+  auto cars = map.getCarsPositions(150, random);
+
+  for (auto t : cars) {
+    sf::Vector2f pos;
+    float angle;
+    std::tie(pos, angle) = t;
+
+    int car = random.computeUniformInteger(0, 9);
+
+    otherCars.emplace_back(car, resources, world, pos, angle);
+  }
+
+  for (auto& car : otherCars) {
+    group.addEntity(car);
+  }
 
   // add Scenario
   Scenario scenario(events, resources);

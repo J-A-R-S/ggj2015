@@ -56,9 +56,12 @@ public:
   sf::Vector2f getBankGoal();
   sf::Vector2f getGunStoreGoal();
   sf::Vector2f getHomeGoal();
+  float getHomeAngle() { return m_homeAngle; }
   sf::Vector2f getClothingStoreGoal();
   sf::Vector2f getAccompliceGoal();
   sf::Vector2f getRocketStoreGoal();
+
+  std::vector<std::tuple<sf::Vector2f, float>> getCarsPositions(unsigned n, game::Random& random) const;
 
 private:
   game::ResourceManager& m_resources;
@@ -72,11 +75,12 @@ private:
   sf::Vector2f m_bankGoal;
   sf::Vector2f m_gunStoreGoal;
   sf::Vector2f m_homeGoal;
+  float m_homeAngle;
   sf::Vector2f m_clothingStore;
   sf::Vector2f m_rocketStoreGoal;
   sf::Vector2f m_accompliceGoal;
 
-  bool checkPosition(std::vector<sf::Vector2i> vector, int x, int y);
+  bool checkPosition(std::vector<sf::Vector2i> vector, int x, int y) const;
 };
 
 #endif // LOCAL_MAP_H

@@ -43,7 +43,7 @@ public:
   constexpr static float WIDTH = 128;
   constexpr static float HEIGHT = 64;
 
-  explicit Car(int car, game::ResourceManager& resources, b2World& world, sf::Vector2f position);
+  explicit Car(int car, game::ResourceManager& resources, b2World& world, sf::Vector2f position, float angle);
 
 
   virtual int priority() const override;
@@ -59,6 +59,7 @@ protected:
   }
 
   void setVelocityAndAngle(float velocity, float angle);
+  void fadeVelocity(float dt);
 
   float getAbsoluteVelocity() const;
 
@@ -74,7 +75,7 @@ private:
 
 class HeroCar : public Car {
 public:
-  HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world, sf::Vector2f position);
+  HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world, sf::Vector2f position, float angle);
 
   virtual void update(float dt) override;
 
@@ -125,8 +126,7 @@ private:
 
 class OtherCar : public Car {
 public:
-  OtherCar(int car, game::ResourceManager& resources, b2World& world);
-
+  OtherCar(int car, game::ResourceManager& resources, b2World& world, const sf::Vector2f& position, float angle);
 
   virtual void update(float dt) override;
 

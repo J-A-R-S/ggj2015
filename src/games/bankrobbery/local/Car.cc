@@ -29,7 +29,7 @@
 #include "Constants.h"
 #include "Events.h"
 
-Car::Car(int car, game::ResourceManager& resources, b2World& world, sf::Vector2f position)
+Car::Car(int car, game::ResourceManager& resources, b2World& world, sf::Vector2f position, float angle)
   : m_car(car)
   , m_texture(nullptr)
   , m_body(nullptr)
@@ -44,6 +44,7 @@ Car::Car(int car, game::ResourceManager& resources, b2World& world, sf::Vector2f
   def.type = b2_dynamicBody;
   def.linearDamping = 0.2f;
   def.position.Set(position.x * BOX2D_SCALE, position.y * BOX2D_SCALE);
+  def.angle = angle;
   m_body = world.CreateBody(&def);
 
   float half_w = WIDTH * BOX2D_SCALE * 0.5f;
@@ -67,8 +68,8 @@ Car::Car(int car, game::ResourceManager& resources, b2World& world, sf::Vector2f
 
   b2FixtureDef fixture;
   fixture.shape = &shape;
-  fixture.density = 1.0f;
-  fixture.friction = 0.0f;
+  fixture.density = 100.0f;
+  fixture.friction = 1.0f;
 
   m_body->CreateFixture(&fixture);
 }
@@ -109,6 +110,13 @@ void Car::setVelocityAndAngle(float velocity, float angle) {
   m_velocity = velocity;
 }
 
+void Car::fadeVelocity(float dt) {
+  b2Vec2 velocity = m_body->GetLinearVelocity();
+  velocity -= (3.0f * dt * velocity);
+  m_body->SetAngularVelocity(0.0f);
+  m_body->SetLinearVelocity(velocity);
+}
+
 float Car::getAbsoluteVelocity() const {
   return m_body->GetLinearVelocity().Length();
 }
@@ -122,8 +130,8 @@ sf::Vector2f Car::getPosition() const {
  * HeroCar
  */
 
-HeroCar::HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world, sf::Vector2f position)
-  : Car(5, resources, world, position)
+HeroCar::HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world, sf::Vector2f position, float angle)
+  : Car(5, resources, world, position, angle)
   , m_events(events)
   , m_movement(CRUISE)
   , m_turn(NONE)
@@ -197,11 +205,17 @@ void HeroCar::update(float dt) {
  * OtherCar
  */
 
-OtherCar::OtherCar(int car, game::ResourceManager& resources, b2World& world)
-  : Car(car, resources, world)
+OtherCar::OtherCar(int car, game::ResourceManager& resources, b2World& world, const sf::Vector2f& position, float angle)
+  : Car(car, resources, world, position, angle)
 {
 }
 
 void OtherCar::update(float dt) {
-
+  fadeVelocity(dt);
+//   float angle = getAngle();
+//   float abs_velocity = getAbsoluteVelocity();
+//
+//   abs_velocity -= (abs_velocity * 0.5 * dt);
+//
+//   setVelocityAndAngle(abs_velocity, angle);
 }

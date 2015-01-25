@@ -86,6 +86,10 @@ void Scenario::start() {
   initStep();
 }
 
+int Scenario::priority() const {
+  return 30;
+}
+
 void Scenario::update(float dt) {
   m_target_timer -= dt;
   m_message_timer -= dt;
