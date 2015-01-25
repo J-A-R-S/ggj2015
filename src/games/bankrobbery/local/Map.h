@@ -53,6 +53,9 @@ public:
 
   virtual void render(sf::RenderWindow& window) override;
 
+  sf::Vector2f getBankGoal();
+  sf::Vector2f getGunStoreGoal();
+
 private:
   game::ResourceManager& m_resources;
   sf::Texture *m_buildingTexture;
@@ -61,6 +64,11 @@ private:
   std::array<std::array<Block, SIZE>, SIZE> m_map;
   sf::VertexArray m_arrayBuilding;
   sf::VertexArray m_arrayStreet;
+
+  sf::Vector2f m_bankGoal;
+  sf::Vector2f m_gunStoreGoal;
+
+  bool checkPosition(std::vector<sf::Vector2i> vector, int x, int y);
 };
 
 #endif // LOCAL_MAP_H
