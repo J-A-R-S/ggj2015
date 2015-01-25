@@ -144,34 +144,37 @@ int main() {
   }
 
   // add Scenario
+
+  static constexpr float TIME_FOR_MISSION = 45.0f;
+
   Scenario scenario(events, resources);
 
   scenario.addStep(Scenario::Flo, 5.0f, "Great, that's a nice day. Perfect\nday to go robbing a bank !");
   scenario.addStep(Scenario::Flo, 5.0f, "I'm gonna met my friend Roxy that\nwill help me.",
-      30.0, map.getAccompliceGoal());
+      TIME_FOR_MISSION, map.getAccompliceGoal());
 
   scenario.addStep(Scenario::Roxy, 5.0f, "Now that I am there, we go where?");
   scenario.addStep(Scenario::Flo, 5.0f, "Let's go buy gloves and a balaclava so\nnobody will recognize us.",
-      30.0, map.getClothingStoreGoal());
+      TIME_FOR_MISSION, map.getClothingStoreGoal());
 
   scenario.addStep(Scenario::Flo, 5.0f, "What do we do now ?");
   scenario.addStep(Scenario::Roxy, 5.0f, "Now, I need a gun and ammunitions,\njust in case.");
   scenario.addStep(Scenario::Flo, 5.0f, "OK, I know a cheap shop.",
-      30.0, map.getGunStoreGoal());
+      TIME_FOR_MISSION, map.getGunStoreGoal());
 
   scenario.addStep(Scenario::Roxy, 5.0f, "What do we do now ?");
   scenario.addStep(Scenario::Flo, 5.0f, "Mmmhhh. Now that I think about it. I should\nfind a rocket launcher, it would be wiser.",
-      30.0, map.getRocketStoreGoal());
+      TIME_FOR_MISSION, map.getRocketStoreGoal());
 
 //   scenario.addStep(5.0f, "Hey ??? ! You got the car ready ?");
 //   scenario.addStep(5.0f, "Yeah sure, but we have to fill up\nthe car with gas first.",
 //       30.0, { 4.5 * 256.0f, (Map::SIZE - 1.5) * 256.0f });
 
   scenario.addStep(Scenario::Flo, 5.0f, "Hurray ! We are ready to go rob\nthat bank ! \\o/",
-      30.0, map.getBankGoal());
+      TIME_FOR_MISSION, map.getBankGoal());
 
   scenario.addStep(Scenario::Flo, 5.0f, "Oh-oh. What do we do now ?",
-      30.0, map.getHomeGoal());
+      TIME_FOR_MISSION, map.getHomeGoal());
 
   scenario.start();
   group.addEntity(scenario);
@@ -182,27 +185,27 @@ int main() {
   sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { VIEWSIZE, VIEWSIZE });
   //sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 2.0f * INITIAL_WIDTH, 2.0f * INITIAL_HEIGHT });
 //   sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, {Map::SIZE * INITIAL_WIDTH / 3, Map::SIZE * INITIAL_HEIGHT / 3 });
-  
+
   view.setViewport(computeViewport(INITIAL_WIDTH, INITIAL_HEIGHT));
 
   events.registerHandler<HeroPositionEvent>([&view](game::EventType type, game::Event *event) {
     auto e = static_cast<HeroPositionEvent*>(event);
     sf::Vector2f center = e->pos;
-    
+
     if (center.x > (Map::SIZE * 256.0f - VIEWSIZE / 2))
       center.x = Map::SIZE * 256.0f - VIEWSIZE / 2;
-    
+
     if (center.x < VIEWSIZE / 2)
       center.x = VIEWSIZE / 2;
-    
+
     if (center.y > (Map::SIZE * 256.0f - VIEWSIZE / 2))
       center.y = Map::SIZE * 256.0f - VIEWSIZE / 2;
-    
+
     if (center.y < VIEWSIZE / 2)
       center.y = VIEWSIZE / 2;
-    
+
     view.setCenter(center);
-    
+
     return game::EventStatus::KEEP;
   });
 
