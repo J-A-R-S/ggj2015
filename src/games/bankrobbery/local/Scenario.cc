@@ -104,6 +104,20 @@ void Scenario::render(sf::RenderWindow& window) {
     shape.setPosition(m_target);
 
     window.draw(shape);
+    
+    // direction
+    sf::Vector2f diff = m_target - m_hero;
+    float angle = std::atan2(diff.y, diff.x);
+
+    static constexpr float TRIANGLE_SIZE = 30;
+    sf::CircleShape triangle(TRIANGLE_SIZE, 3);
+    float radius = 120.0f;
+    triangle.setPosition(m_hero.x + radius * std::cos(angle), m_hero.y + radius * std::sin(angle));
+    triangle.setFillColor(sf::Color(0xFF, 0x00, 0x00, 0x80));
+    triangle.setOrigin(TRIANGLE_SIZE, TRIANGLE_SIZE);
+    triangle.setRotation(angle / M_PI * 180.0 + 90.0);
+
+    window.draw(triangle);
   }
 
   sf::View saved_view = window.getView();
@@ -115,23 +129,7 @@ void Scenario::render(sf::RenderWindow& window) {
   window.setView(view);
 
   if (m_active) {
-    // direction
-
-    sf::Vector2f diff = m_target - m_hero;
-    float angle = std::atan2(diff.y, diff.x);
-
-    static constexpr float TRIANGLE_SIZE = 15;
-    sf::CircleShape triangle(TRIANGLE_SIZE, 3);
-    float radius = 100.0f;
-    triangle.setPosition(size.x / 2 + radius * std::cos(angle), size.y / 2 + radius * std::sin(angle));
-    triangle.setFillColor(sf::Color(0xFF, 0x00, 0x00, 0x80));
-    triangle.setOrigin(TRIANGLE_SIZE, TRIANGLE_SIZE);
-    triangle.setRotation(angle / M_PI * 180.0 + 90.0);
-
-    window.draw(triangle);
-
     // timer
-
     if (m_target_timer > 0) {
       unsigned timer = static_cast<unsigned>(m_target_timer);
       std::array<char, 64> buffer;
