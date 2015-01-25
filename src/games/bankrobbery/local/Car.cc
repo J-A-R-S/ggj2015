@@ -29,7 +29,7 @@
 #include "Constants.h"
 #include "Events.h"
 
-Car::Car(int car, game::ResourceManager& resources, b2World& world)
+Car::Car(int car, game::ResourceManager& resources, b2World& world, sf::Vector2f position)
   : m_car(car)
   , m_texture(nullptr)
   , m_body(nullptr)
@@ -43,7 +43,7 @@ Car::Car(int car, game::ResourceManager& resources, b2World& world)
   b2BodyDef def;
   def.type = b2_dynamicBody;
   def.linearDamping = 0.2f;
-  def.position.Set(384.0f * BOX2D_SCALE, 384.0f * BOX2D_SCALE);
+  def.position.Set(position.x * BOX2D_SCALE, position.y * BOX2D_SCALE);
   m_body = world.CreateBody(&def);
 
   float half_w = WIDTH * BOX2D_SCALE * 0.5f;
@@ -122,8 +122,8 @@ sf::Vector2f Car::getPosition() const {
  * HeroCar
  */
 
-HeroCar::HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world)
-  : Car(5, resources, world)
+HeroCar::HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world, sf::Vector2f position)
+  : Car(5, resources, world, position)
   , m_events(events)
   , m_movement(CRUISE)
   , m_turn(NONE)

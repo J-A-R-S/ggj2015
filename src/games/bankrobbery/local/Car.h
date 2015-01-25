@@ -43,7 +43,7 @@ public:
   constexpr static float WIDTH = 128;
   constexpr static float HEIGHT = 64;
 
-  explicit Car(int car, game::ResourceManager& resources, b2World& world);
+  explicit Car(int car, game::ResourceManager& resources, b2World& world, sf::Vector2f position);
 
 
   virtual int priority() const override;
@@ -74,7 +74,7 @@ private:
 
 class HeroCar : public Car {
 public:
-  HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world);
+  HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world, sf::Vector2f position);
 
   virtual void update(float dt) override;
 
