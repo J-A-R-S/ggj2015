@@ -154,7 +154,7 @@ void Scenario::render(sf::RenderWindow& window) {
     sf::Text text;
     text.setFont(*m_font);
     text.setCharacterSize(32);
-    text.setColor(sf::Color::Red);
+    text.setColor(sf::Color::Black);
     text.setString(m_message);
 
     auto bounds = text.getLocalBounds();
@@ -167,7 +167,9 @@ void Scenario::render(sf::RenderWindow& window) {
     sf::RectangleShape rectangle({ bounds.width + 2 * PADDING, bounds.height + 2 * PADDING });
     rectangle.setOrigin(bounds.width / 2.0f + PADDING, PADDING);
     rectangle.setPosition(text.getPosition());
-    rectangle.setFillColor({ 0x00, 0x00, 0x00, 0x80 });
+    rectangle.setFillColor({ 0xA7, 0x67, 0x26, 0x95 });
+    rectangle.setOutlineThickness(1.0f);
+    rectangle.setOutlineColor(sf::Color::Black);
     window.draw(rectangle);
 
     window.draw(text);
