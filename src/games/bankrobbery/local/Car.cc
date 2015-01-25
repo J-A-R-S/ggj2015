@@ -164,11 +164,17 @@ void HeroCar::update(float dt) {
 
   switch (m_turn) {
     case LEFT:
-      angle -= dt * TURN * factor;
+      if (velocity >= 0)
+        angle -= dt * TURN * factor;
+      else
+        angle += dt * TURN * factor;
       break;
 
     case RIGHT:
-      angle += dt * TURN * factor;
+      if (velocity >= 0)
+        angle += dt * TURN * factor;
+      else
+        angle -= dt * TURN * factor;
       break;
 
     case NONE:
