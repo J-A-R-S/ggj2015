@@ -18,6 +18,7 @@
 
 #include "Scenario.h"
 
+#include <cassert>
 #include <cstdio>
 #include <array>
 
@@ -27,11 +28,13 @@
 Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources) {
   events.registerHandler<HeroPositionEvent>(&Scenario::onHeroPosition, this);
   m_font = resources.getFont("Averia-Regular.ttf");
+  assert(m_font);
 }
 
 static constexpr float DISTANCE = 100.0f;
 
 game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* event) {
+  assert(event);
   auto e = static_cast<HeroPositionEvent*>(event);
   m_hero = e->pos;
 
