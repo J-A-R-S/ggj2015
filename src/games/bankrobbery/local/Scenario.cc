@@ -32,6 +32,7 @@ Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources)
   m_font = resources.getFont("Averia-Regular.ttf");
   assert(m_font);
   m_floTexture = resources.getTexture("flo.png");
+  m_roxyTexture = resources.getTexture("roxy.png");
 }
 
 static constexpr float DISTANCE = 100.0f;
@@ -181,6 +182,9 @@ void Scenario::render(sf::RenderWindow& window) {
 
     if (m_character == Flo) {
       spriteCharacter.setTexture(*m_floTexture);
+    }
+    else if (m_character == Roxy) {
+      spriteCharacter.setTexture(*m_roxyTexture);
     }
 
     spriteCharacter.setOrigin(bounds.width / 2.0f + PADDING, PADDING);
