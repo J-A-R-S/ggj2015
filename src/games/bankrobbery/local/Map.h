@@ -55,6 +55,10 @@ public:
 
   sf::Vector2f getBankGoal();
   sf::Vector2f getGunStoreGoal();
+  sf::Vector2f getHomeGoal();
+  sf::Vector2f getClothingStoreGoal();
+  sf::Vector2f getAccompliceGoal();
+  sf::Vector2f getRocketStoreGoal();
 
 private:
   game::ResourceManager& m_resources;
@@ -67,6 +71,10 @@ private:
 
   sf::Vector2f m_bankGoal;
   sf::Vector2f m_gunStoreGoal;
+  sf::Vector2f m_homeGoal;
+  sf::Vector2f m_clothingStore;
+  sf::Vector2f m_rocketStoreGoal;
+  sf::Vector2f m_accompliceGoal;
 
   bool checkPosition(std::vector<sf::Vector2i> vector, int x, int y);
 };
