@@ -33,7 +33,6 @@ Car::Car(game::ResourceManager& resources, b2World& world)
   : m_texture(nullptr)
   , m_body(nullptr)
   , m_velocity(0)
-  , m_angle(0)
 {
   m_texture = resources.getTexture("sheet_car.png");
   m_texture->setSmooth(true);
@@ -75,9 +74,6 @@ Car::Car(game::ResourceManager& resources, b2World& world)
 int Car::priority() const {
   return 20;
 }
-
-static constexpr float HOP = 8.0f;
-static constexpr float TURN = 2.0f;
 
 void Car::render(sf::RenderWindow& window) {
   auto pos = m_body->GetPosition();
@@ -133,6 +129,9 @@ HeroCar::HeroCar(game::EventManager& events, game::ResourceManager& resources, b
   m_sound.setLoop(true);
   m_sound.play();
 }
+
+static constexpr float HOP = 8.0f;
+static constexpr float TURN = 2.0f;
 
 void HeroCar::update(float dt) {
   auto pos = getPosition();

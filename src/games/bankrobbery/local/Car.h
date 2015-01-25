@@ -55,7 +55,7 @@ protected:
   }
 
   float getAngle() const {
-    return m_angle;
+    return m_body->GetAngle();
   }
 
   void setVelocityAndAngle(float velocity, float angle);
@@ -69,7 +69,6 @@ private:
   b2Body *m_body;
 
   float m_velocity;
-  float m_angle;
 };
 
 class HeroCar : public Car {
