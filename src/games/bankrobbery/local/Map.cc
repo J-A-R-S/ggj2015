@@ -42,7 +42,7 @@ void Map::generate(game::Random& random, b2World& world) {
 
       if (i == 0 || j == 0 || i == SIZE - 1 || j == SIZE - 1) {
         block.kind = GRASS;
-        block.number = 0;
+        block.number = random.computeUniformInteger(15, 18);
       } else if (i % 3 == 1 || j % 3 == 1) {
         block.kind = STREET;
         block.number = 0;
@@ -263,19 +263,13 @@ void Map::generate(game::Random& random, b2World& world) {
       float y1 = j * TILESIZE;
       float y2 = y1 + TILESIZE;
 
-      float u = (block.number % 5) * TILESIZE;
-      float v = (block.number / 5) * TILESIZE;
+      float u = (block.number % 6) * TILESIZE;
+      float v = (block.number / 6) * TILESIZE;
 
       switch (block.kind) {
-        case GRASS:
-          m_arrayStreet.append(sf::Vertex({ x1, y1 }, sf::Color::Green));
-          m_arrayStreet.append(sf::Vertex({ x1, y2 }, sf::Color::Green));
-          m_arrayStreet.append(sf::Vertex({ x2, y2 }, sf::Color::Green));
-          m_arrayStreet.append(sf::Vertex({ x2, y1 }, sf::Color::Green));
-          break;
-
         case STREET:
         case ROADBLOCK:
+        case GRASS:
           m_arrayStreet.append(sf::Vertex({ x1, y1 }, { u, v }));
           m_arrayStreet.append(sf::Vertex({ x1, y2 }, { u, v + TILESIZE }));
           m_arrayStreet.append(sf::Vertex({ x2, y2 }, { u + TILESIZE, v + TILESIZE }));
