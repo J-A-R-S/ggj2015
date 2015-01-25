@@ -37,11 +37,10 @@ int main() {
 
   sf::RenderWindow window(sf::VideoMode(INITIAL_WIDTH, INITIAL_HEIGHT), "Bank Robbery for Dummies (version " GAME_VERSION ")");
   window.setKeyRepeatEnabled(false);
-//   window.setVerticalSyncEnabled(true);
-//   window.setFramerateLimit(0);
+  window.setVerticalSyncEnabled(true);
+  window.setFramerateLimit(0);
 
   game::Log::setLevel(game::Log::DEBUG);
-  game::Log::debug(game::Log::GENERAL, "Path install : %s\n", GAME_DATADIR);
 
   // add actions
   game::ActionSet actions;
@@ -103,6 +102,12 @@ int main() {
   Scenario scenario(events, resources);
   scenario.addStep({ "Great, that's a nice day.\nPerfect day to go robbing a bank !", 30.0, { (Map::SIZE - 1.5) * 256.0f, (Map::SIZE - 1.5) * 256.0f } });
   scenario.addStep({ "Alright ! Now, I need a gun\nand ammunitions, just in case.", 30.0, { 4.5 * 256.0f, 9.5 * 256.0f } });
+  scenario.addStep({ "Mmmhhh. Now that I think about\nit. I should find a rocket launcher,\nit would be wiser.", 30.0, { (Map::SIZE - 10.5) * 256.0f, (Map::SIZE - 16.5) * 256.0f } });
+  scenario.addStep({ "OK I'm ready ! I'm gonna met my\nfriend ??? that will help me.", 30.0, { 9.5 * 256.0f, 16.5 * 256.0f } });
+  // missing step 4
+  scenario.addStep({ "Hurray ! We are ready to go rob\nthat bank ! \\o/", 30.0, { (Map::SIZE - 4.5) * 256.0f, (Map::SIZE - 17.5) * 256.0f } });
+  scenario.addStep({ "Oh-oh. What do we do now ?", 30.0, { 7.5 * 256.0f, (Map::SIZE - 4.5)* 256.0f } });
+
   scenario.start();
   group.addEntity(scenario);
 
