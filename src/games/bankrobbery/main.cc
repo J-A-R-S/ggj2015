@@ -233,7 +233,7 @@ int main() {
 
     // render
     window.setView(view);
-    window.clear(sf::Color::White);
+    window.clear(sf::Color::Black);
     group.render(window);
     window.display();
   }
