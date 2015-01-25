@@ -29,11 +29,14 @@
 #include "Constants.h"
 #include "Events.h"
 
-Car::Car(game::ResourceManager& resources, b2World& world)
-  : m_texture(nullptr)
+Car::Car(int car, game::ResourceManager& resources, b2World& world)
+  : m_car(car)
+  , m_texture(nullptr)
   , m_body(nullptr)
   , m_velocity(0)
 {
+  assert(0 <= car && car < 10);
+
   m_texture = resources.getTexture("sheet_car.png");
   m_texture->setSmooth(true);
 
@@ -79,8 +82,8 @@ void Car::render(sf::RenderWindow& window) {
   auto pos = m_body->GetPosition();
 
   sf::IntRect textureRect;
-  textureRect.left = 1 * WIDTH;
-  textureRect.top = 1 * HEIGHT;
+  textureRect.left = (m_car % 4) * WIDTH;
+  textureRect.top = (m_car / 4) * HEIGHT;
   textureRect.width = WIDTH;
   textureRect.height = HEIGHT;
 
@@ -118,7 +121,7 @@ sf::Vector2f Car::getPosition() const {
 
 
 HeroCar::HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world)
-  : Car(resources, world)
+  : Car(5, resources, world)
   , m_events(events)
   , m_movement(CRUISE)
   , m_turn(NONE)

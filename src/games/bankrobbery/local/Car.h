@@ -43,7 +43,7 @@ public:
   constexpr static float WIDTH = 128;
   constexpr static float HEIGHT = 64;
 
-  explicit Car(game::ResourceManager& resources, b2World& world);
+  explicit Car(int car, game::ResourceManager& resources, b2World& world);
 
 
   virtual int priority() const override;
@@ -65,6 +65,7 @@ protected:
   sf::Vector2f getPosition() const;
 
 private:
+  const int m_car;
   sf::Texture *m_texture;
   b2Body *m_body;
 
