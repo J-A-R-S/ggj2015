@@ -23,8 +23,10 @@
 #include <game/graphics/Resource.h>
 
 struct Step {
+  float message_timer;
   std::string message;
-  float timer;
+  bool active;
+  float target_timer;
   sf::Vector2f target;
 };
 
@@ -32,11 +34,12 @@ class Scenario : public game::Entity {
 public:
   Scenario(game::EventManager& events, game::ResourceManager& resources);
 
-  void addStep(const Step& step);
+  void addStep(float message_timer, const std::string& message);
+  void addStep(float message_timer, const std::string& message, float target_timer, const sf::Vector2f& target);
   void start();
 
-  virtual void  update  (float dt) override;
-  virtual void  render  (sf::RenderWindow& window) override;
+  virtual void update(float dt) override;
+  virtual void render(sf::RenderWindow& window) override;
 
 private:
   game::EventStatus onHeroPosition(game::EventType type, game::Event* event);
@@ -49,7 +52,8 @@ private:
   float m_message_timer;
   std::string m_message;
 
-  float m_timer;
+  bool m_active;
+  float m_target_timer;
   sf::Vector2f m_target;
   sf::Vector2f m_hero;
 
