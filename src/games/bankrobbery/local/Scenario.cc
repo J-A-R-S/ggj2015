@@ -18,6 +18,7 @@
 
 #include "Scenario.h"
 
+#include <cassert>
 #include <cstdio>
 #include <array>
 
@@ -27,11 +28,13 @@
 Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources) {
   events.registerHandler<HeroPositionEvent>(&Scenario::onHeroPosition, this);
   m_font = resources.getFont("Averia-Regular.ttf");
+  assert(m_font);
 }
 
 static constexpr float DISTANCE = 100.0f;
 
 game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* event) {
+  assert(event);
   auto e = static_cast<HeroPositionEvent*>(event);
   m_hero = e->pos;
 
@@ -50,15 +53,30 @@ game::EventStatus Scenario::onHeroPosition(game::EventType type, game::Event* ev
 }
 
 void Scenario::initStep() {
-  m_message_timer = 5.0f;
+  m_message_timer = m_steps[m_current_step].message_timer;
   m_message = m_steps[m_current_step].message;
 
+  m_active = m_steps[m_current_step].active;
   m_target = m_steps[m_current_step].target;
-  m_timer = m_steps[m_current_step].timer;
+  m_target_timer = m_steps[m_current_step].target_timer;
 }
 
-void Scenario::addStep(const Step& step) {
-  m_steps.push_back(step);
+void Scenario::addStep(float message_timer, const std::string& message) {
+  Step step;
+  step.message_timer = message_timer;
+  step.message = message;
+  step.active = false;
+  m_steps.emplace_back(std::move(step));
+}
+
+void Scenario::addStep(float message_timer, const std::string& message, float target_timer, const sf::Vector2f& target) {
+  Step step;
+  step.message_timer = message_timer;
+  step.message = message;
+  step.active = true;
+  step.target_timer = target_timer;
+  step.target = target;
+  m_steps.emplace_back(std::move(step));
 }
 
 void Scenario::start() {
@@ -69,17 +87,24 @@ void Scenario::start() {
 }
 
 void Scenario::update(float dt) {
-  m_timer -= dt;
+  m_target_timer -= dt;
   m_message_timer -= dt;
+
+  if (m_message_timer < 0 && !m_active) {
+    m_current_step++;
+    initStep();
+  }
 }
 
 void Scenario::render(sf::RenderWindow& window) {
-  sf::CircleShape shape(100);
-  shape.setFillColor({0xff, 0x00, 0x00, 0x80});
-  shape.setOrigin(100.0, 100.0);
-  shape.setPosition(m_target);
+  if (m_active) {
+    sf::CircleShape shape(100);
+    shape.setFillColor({0xff, 0x00, 0x00, 0x80});
+    shape.setOrigin(100.0, 100.0);
+    shape.setPosition(m_target);
 
-  window.draw(shape);
+    window.draw(shape);
+  }
 
   sf::View saved_view = window.getView();
 
@@ -89,36 +114,39 @@ void Scenario::render(sf::RenderWindow& window) {
   view.setSize(size.x, size.y);
   window.setView(view);
 
-  // timer
+  if (m_active) {
+    // direction
 
-  if (m_timer > 0) {
-    unsigned timer = static_cast<unsigned>(m_timer);
-    std::array<char, 64> buffer;
-    std::snprintf(buffer.data(), buffer.size(), "%.2u", timer);
+    sf::Vector2f diff = m_target - m_hero;
+    float angle = std::atan2(diff.y, diff.x);
 
-    sf::Text text;
-    text.setFont(*m_font);
-    text.setCharacterSize(48);
-    text.setColor(sf::Color::Red);
-    text.setString(buffer.data());
-    text.setPosition(0.0f, 0.0f);
-    window.draw(text);
+    static constexpr float TRIANGLE_SIZE = 15;
+    sf::CircleShape triangle(TRIANGLE_SIZE, 3);
+    float radius = 100.0f;
+    triangle.setPosition(size.x / 2 + radius * std::cos(angle), size.y / 2 + radius * std::sin(angle));
+    triangle.setFillColor(sf::Color(0xFF, 0x00, 0x00, 0x80));
+    triangle.setOrigin(TRIANGLE_SIZE, TRIANGLE_SIZE);
+    triangle.setRotation(angle / M_PI * 180.0 + 90.0);
+
+    window.draw(triangle);
+
+    // timer
+
+    if (m_target_timer > 0) {
+      unsigned timer = static_cast<unsigned>(m_target_timer);
+      std::array<char, 64> buffer;
+      std::snprintf(buffer.data(), buffer.size(), "%.2u", timer);
+
+      sf::Text text;
+      text.setFont(*m_font);
+      text.setCharacterSize(48);
+      text.setColor(sf::Color::Red);
+      text.setString(buffer.data());
+      text.setPosition(20.0f, 20.0f);
+      window.draw(text);
+    }
+
   }
-
-  // direction
-
-  sf::Vector2f diff = m_target - m_hero;
-  float angle = std::atan2(diff.y, diff.x);
-
-  static constexpr float TRIANGLE_SIZE = 15;
-  sf::CircleShape triangle(TRIANGLE_SIZE, 3);
-  float radius = 100.0f;
-  triangle.setPosition(size.x / 2 + radius * std::cos(angle), size.y / 2 + radius * std::sin(angle));
-  triangle.setFillColor(sf::Color(0xFF, 0x00, 0x00, 0x80));
-  triangle.setOrigin(TRIANGLE_SIZE, TRIANGLE_SIZE);
-  triangle.setRotation(angle / M_PI * 180.0 + 90.0);
-
-  window.draw(triangle);
 
   // message
 
