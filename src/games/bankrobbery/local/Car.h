@@ -29,6 +29,7 @@
 #include <game/graphics/Entity.h>
 #include <game/graphics/Resource.h>
 
+#include <SFML/Audio.hpp>
 #include <Box2D/Box2D.h>
 
 class Car : public game::Entity {
@@ -80,6 +81,8 @@ private:
 
   float m_velocity;
   float m_angle;
+
+  sf::Sound m_sound;
 
 };
 
