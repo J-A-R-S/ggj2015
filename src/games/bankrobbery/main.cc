@@ -149,31 +149,31 @@ int main() {
 
   Scenario scenario(events, resources);
 
-  scenario.addStep(Scenario::Flo, 5.0f, "Great, that's a nice day. Perfect\nday to go robbing a bank !");
-  scenario.addStep(Scenario::Flo, 5.0f, "I'm gonna met my friend Roxy that\nwill help me.",
+  scenario.addStep(Scenario::Flo, 5.0f, "Great, that's a nice day. Perfect\nday to go robbing a bank!");
+  scenario.addStep(Scenario::Flo, 5.0f, "I'm gonna meet my friend Roxy that\nwill help me.",
       TIME_FOR_MISSION, map.getAccompliceGoal());
 
-  scenario.addStep(Scenario::Roxy, 5.0f, "Now that I am there, we go where?");
+  scenario.addStep(Scenario::Roxy, 5.0f, "Now that I am here, where do we go?");
   scenario.addStep(Scenario::Flo, 5.0f, "Let's go buy gloves and a balaclava so\nnobody will recognize us.",
       TIME_FOR_MISSION, map.getClothingStoreGoal());
 
-  scenario.addStep(Scenario::Flo, 5.0f, "What do we do now ?");
-  scenario.addStep(Scenario::Roxy, 5.0f, "Now, I need a gun and ammunitions,\njust in case.");
+  scenario.addStep(Scenario::Flo, 5.0f, "What do we do now?");
+  scenario.addStep(Scenario::Roxy, 5.0f, "Now, we need a gun and ammunitions,\njust in case.");
   scenario.addStep(Scenario::Flo, 5.0f, "OK, I know a cheap shop.",
       TIME_FOR_MISSION, map.getGunStoreGoal());
 
-  scenario.addStep(Scenario::Roxy, 5.0f, "What do we do now ?");
-  scenario.addStep(Scenario::Flo, 5.0f, "Mmmhhh. Now that I think about it. I should\nfind a rocket launcher, it would be wiser.",
+  scenario.addStep(Scenario::Roxy, 5.0f, "What do we do now?");
+  scenario.addStep(Scenario::Flo, 5.0f, "Mmmhhh. Now that I think about it, we should\nfind a rocket launcher, it would be wiser.",
       TIME_FOR_MISSION, map.getRocketStoreGoal());
 
 //   scenario.addStep(5.0f, "Hey ??? ! You got the car ready ?");
 //   scenario.addStep(5.0f, "Yeah sure, but we have to fill up\nthe car with gas first.",
 //       30.0, { 4.5 * 256.0f, (Map::SIZE - 1.5) * 256.0f });
 
-  scenario.addStep(Scenario::Flo, 5.0f, "Hurray ! We are ready to go rob\nthat bank ! \\o/",
+  scenario.addStep(Scenario::Flo, 5.0f, "Hurray! We are ready to go rob\nthat bank! \\o/",
       TIME_FOR_MISSION, map.getBankGoal());
 
-  scenario.addStep(Scenario::Flo, 5.0f, "Oh-oh. What do we do now ?",
+  scenario.addStep(Scenario::Flo, 5.0f, "Oh-oh. What do we do now?",
       TIME_FOR_MISSION, map.getHomeGoal());
 
   scenario.start();
