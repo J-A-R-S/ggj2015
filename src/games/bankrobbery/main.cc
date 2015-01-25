@@ -67,7 +67,7 @@ int main() {
   window.setVerticalSyncEnabled(true);
   window.setFramerateLimit(0);
 
-  game::Log::setLevel(game::Log::DEBUG);
+//   game::Log::setLevel(game::Log::DEBUG);
 
   // add actions
   game::ActionSet actions;
