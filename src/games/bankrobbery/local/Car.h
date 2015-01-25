@@ -123,4 +123,13 @@ private:
   sf::Sound m_sound;
 };
 
+class OtherCar : public Car {
+public:
+  OtherCar(int car, game::ResourceManager& resources, b2World& world);
+
+
+  virtual void update(float dt) override;
+
+};
+
 #endif // LOCAL_CAR_H

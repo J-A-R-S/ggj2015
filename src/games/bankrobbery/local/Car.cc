@@ -118,7 +118,9 @@ sf::Vector2f Car::getPosition() const {
   return { pos.x / BOX2D_SCALE, pos.y / BOX2D_SCALE };
 }
 
-
+/*
+ * HeroCar
+ */
 
 HeroCar::HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world)
   : Car(5, resources, world)
@@ -188,4 +190,18 @@ void HeroCar::update(float dt) {
   // Set volume audio
   float volume = getAbsoluteVelocity() / 15.0f * 100;
   m_sound.setVolume(volume);
+}
+
+
+/*
+ * OtherCar
+ */
+
+OtherCar::OtherCar(int car, game::ResourceManager& resources, b2World& world)
+  : Car(car, resources, world)
+{
+}
+
+void OtherCar::update(float dt) {
+
 }

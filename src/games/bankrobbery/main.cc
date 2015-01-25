@@ -37,7 +37,7 @@ int main() {
 
   sf::RenderWindow window(sf::VideoMode(INITIAL_WIDTH, INITIAL_HEIGHT), "Bank Robbery for Dummies (version " GAME_VERSION ")");
   window.setKeyRepeatEnabled(false);
-//   window.setVerticalSyncEnabled(true);
+  window.setVerticalSyncEnabled(true);
 //   window.setFramerateLimit(0);
 
   game::Log::setLevel(game::Log::DEBUG);
