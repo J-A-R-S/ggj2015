@@ -18,6 +18,8 @@
 
 #include "Scenario.h"
 
+#include <game/base/Log.h>
+
 #include <cassert>
 #include <cstdio>
 #include <array>
@@ -29,6 +31,8 @@ Scenario::Scenario(game::EventManager& events, game::ResourceManager& resources)
   events.registerHandler<HeroPositionEvent>(&Scenario::onHeroPosition, this);
   m_font = resources.getFont("Averia-Regular.ttf");
   assert(m_font);
+  m_floTexture = resources.getTexture("flo.png");
+  m_roxyTexture = resources.getTexture("roxy.png");
 }
 
 static constexpr float DISTANCE = 100.0f;
@@ -59,23 +63,26 @@ void Scenario::initStep() {
   m_active = m_steps[m_current_step].active;
   m_target = m_steps[m_current_step].target;
   m_target_timer = m_steps[m_current_step].target_timer;
+  m_character = m_steps[m_current_step].character;
 }
 
-void Scenario::addStep(float message_timer, const std::string& message) {
+void Scenario::addStep(Character character, float message_timer, const std::string& message) {
   Step step;
   step.message_timer = message_timer;
   step.message = message;
   step.active = false;
+  step.character = character;
   m_steps.emplace_back(std::move(step));
 }
 
-void Scenario::addStep(float message_timer, const std::string& message, float target_timer, const sf::Vector2f& target) {
+void Scenario::addStep(Character character, float message_timer, const std::string& message, float target_timer, const sf::Vector2f& target) {
   Step step;
   step.message_timer = message_timer;
   step.message = message;
   step.active = true;
   step.target_timer = target_timer;
   step.target = target;
+  step.character = character;
   m_steps.emplace_back(std::move(step));
 }
 
@@ -158,17 +165,32 @@ void Scenario::render(sf::RenderWindow& window) {
     auto bounds = text.getLocalBounds();
 
     text.setOrigin(bounds.width / 2.0f, 0.0f);
-    text.setPosition(size.x / 2.0f, size.y * 0.8f);
+    text.setPosition((size.x + 130) / 2.0f, size.y * 0.7f);
 
     static constexpr float PADDING = 20.0f;
 
-    sf::RectangleShape rectangle({ bounds.width + 2 * PADDING, bounds.height + 2 * PADDING });
+    sf::RectangleShape rectangle({ bounds.width + 2 * PADDING + 130, 100 + 2 * PADDING });
     rectangle.setOrigin(bounds.width / 2.0f + PADDING, PADDING);
-    rectangle.setPosition(text.getPosition());
+    rectangle.setPosition(text.getPosition().x - 130, text.getPosition().y);
     rectangle.setFillColor({ 0xA7, 0x67, 0x26, 0x95 });
     rectangle.setOutlineThickness(1.0f);
     rectangle.setOutlineColor(sf::Color::Black);
+
+    sf::Sprite spriteCharacter;
+
+    if (m_character == Flo) {
+      spriteCharacter.setTexture(*m_floTexture);
+    }
+    else if (m_character == Roxy) {
+      spriteCharacter.setTexture(*m_roxyTexture);
+    }
+
+    spriteCharacter.setOrigin(bounds.width / 2.0f + PADDING, PADDING);
+    spriteCharacter.setPosition(text.getPosition().x - 130, text.getPosition().y);
+
     window.draw(rectangle);
+
+    window.draw(spriteCharacter);
 
     window.draw(text);
   }
