@@ -29,6 +29,33 @@
 
 #include "config.h"
 
+static constexpr float VIEWSIZE = 2000.0f;
+
+static sf::FloatRect computeViewport(unsigned width, unsigned height) {
+  float w = static_cast<float>(width);
+  float h = static_cast<float>(height);
+
+  float r = w / h;
+
+  sf::FloatRect vp;
+
+  if (width < height) {
+    vp.left = 0.0f;
+    vp.width = 1.0;
+
+    vp.top = (1 - r) / 2;
+    vp.height = r;
+  } else {
+    vp.top = 0.0f;
+    vp.height = 1.0f;
+
+    vp.left = (1 - 1 / r) / 2;
+    vp.width = 1 / r;
+  }
+
+  return vp;
+}
+
 int main() {
   // initialize
 
@@ -131,12 +158,30 @@ int main() {
   // main loop
   sf::Clock clock;
 
-  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 2.0f * INITIAL_WIDTH, 2.0f * INITIAL_HEIGHT });
+  sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { VIEWSIZE, VIEWSIZE });
+  //sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 2.0f * INITIAL_WIDTH, 2.0f * INITIAL_HEIGHT });
 //   sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, {Map::SIZE * INITIAL_WIDTH / 3, Map::SIZE * INITIAL_HEIGHT / 3 });
+  
+  view.setViewport(computeViewport(INITIAL_WIDTH, INITIAL_HEIGHT));
 
   events.registerHandler<HeroPositionEvent>([&view](game::EventType type, game::Event *event) {
     auto e = static_cast<HeroPositionEvent*>(event);
-    view.setCenter({ e->pos.x, e->pos.y });
+    sf::Vector2f center = e->pos;
+    
+    if (center.x > (Map::SIZE * 256.0f - VIEWSIZE / 2))
+      center.x = Map::SIZE * 256.0f - VIEWSIZE / 2;
+    
+    if (center.x < VIEWSIZE / 2)
+      center.x = VIEWSIZE / 2;
+    
+    if (center.y > (Map::SIZE * 256.0f - VIEWSIZE / 2))
+      center.y = Map::SIZE * 256.0f - VIEWSIZE / 2;
+    
+    if (center.y < VIEWSIZE / 2)
+      center.y = VIEWSIZE / 2;
+    
+    view.setCenter(center);
+    
     return game::EventStatus::KEEP;
   });
 
@@ -148,7 +193,8 @@ int main() {
       actions.update(event);
 
       if (event.type == sf::Event::Resized) {
-        view.setSize(2.0f * event.size.width, 2.0f * event.size.height);
+        view.setViewport(computeViewport(event.size.width, event.size.height));
+        //view.setSize(2.0f * event.size.width, 2.0f * event.size.height);
       }
     }
 
