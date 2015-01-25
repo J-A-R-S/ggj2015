@@ -253,6 +253,130 @@ void Map::generate(game::Random& random, b2World& world) {
     assert(false);
   }
 
+  // set home
+  do {
+    x = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+    y = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+  } while (checkPosition(positions, x, y));
+  positions.push_back({ x, y });
+
+  x = 2 + 3 * x;
+  y = 2 + 3 * y;
+  m_map[x][y].number = 6;
+  // Check if the street is clearly
+  if (m_map[x - 1][y].kind == STREET) {
+    m_homeGoal.x = (x - 1 + 0.5f) * TILESIZE;
+    m_homeGoal.y = (y + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y - 1].kind == STREET) {
+    m_homeGoal.x = (x + 0.5f) * TILESIZE;
+    m_homeGoal.y = (y - 1 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y + 2].kind == STREET) {
+    m_homeGoal.x = (x + 0.5f) * TILESIZE;
+    m_homeGoal.y = (y + 2 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x + 2][y + 1].kind == STREET) {
+    m_homeGoal.x = (x + 2 + 0.5f) * TILESIZE;
+    m_homeGoal.y = (y + 1 + 0.5f) * TILESIZE;
+  }
+  else {
+    assert(false);
+  }
+
+  // set clothing store
+  do {
+    x = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+    y = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+  } while (checkPosition(positions, x, y));
+  positions.push_back({ x, y });
+
+  x = 2 + 3 * x;
+  y = 2 + 3 * y;
+  m_map[x][y].number = 0;
+  // Check if the street is clearly
+  if (m_map[x - 1][y].kind == STREET) {
+    m_clothingStore.x = (x - 1 + 0.5f) * TILESIZE;
+    m_clothingStore.y = (y + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y - 1].kind == STREET) {
+    m_clothingStore.x = (x + 0.5f) * TILESIZE;
+    m_clothingStore.y = (y - 1 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y + 2].kind == STREET) {
+    m_clothingStore.x = (x + 0.5f) * TILESIZE;
+    m_clothingStore.y = (y + 2 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x + 2][y + 1].kind == STREET) {
+    m_clothingStore.x = (x + 2 + 0.5f) * TILESIZE;
+    m_clothingStore.y = (y + 1 + 0.5f) * TILESIZE;
+  }
+  else {
+    assert(false);
+  }
+
+  // set rocket store
+  do {
+    x = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+    y = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+  } while (checkPosition(positions, x, y));
+  positions.push_back({ x, y });
+
+  x = 2 + 3 * x;
+  y = 2 + 3 * y;
+  m_map[x][y].number = 4;
+  // Check if the street is clearly
+  if (m_map[x - 1][y].kind == STREET) {
+    m_rocketStoreGoal.x = (x - 1 + 0.5f) * TILESIZE;
+    m_rocketStoreGoal.y = (y + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y - 1].kind == STREET) {
+    m_rocketStoreGoal.x = (x + 0.5f) * TILESIZE;
+    m_rocketStoreGoal.y = (y - 1 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y + 2].kind == STREET) {
+    m_rocketStoreGoal.x = (x + 0.5f) * TILESIZE;
+    m_rocketStoreGoal.y = (y + 2 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x + 2][y + 1].kind == STREET) {
+    m_rocketStoreGoal.x = (x + 2 + 0.5f) * TILESIZE;
+    m_rocketStoreGoal.y = (y + 1 + 0.5f) * TILESIZE;
+  }
+  else {
+    assert(false);
+  }
+
+  // set accomplice
+  do {
+    x = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+    y = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+  } while (checkPosition(positions, x, y));
+  positions.push_back({ x, y });
+
+  x = 2 + 3 * x;
+  y = 2 + 3 * y;
+  m_map[x][y].number = 5;
+  // Check if the street is clearly
+  if (m_map[x - 1][y].kind == STREET) {
+    m_accompliceGoal.x = (x - 1 + 0.5f) * TILESIZE;
+    m_accompliceGoal.y = (y + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y - 1].kind == STREET) {
+    m_accompliceGoal.x = (x + 0.5f) * TILESIZE;
+    m_accompliceGoal.y = (y - 1 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y + 2].kind == STREET) {
+    m_accompliceGoal.x = (x + 0.5f) * TILESIZE;
+    m_accompliceGoal.y = (y + 2 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x + 2][y + 1].kind == STREET) {
+    m_accompliceGoal.x = (x + 2 + 0.5f) * TILESIZE;
+    m_accompliceGoal.y = (y + 1 + 0.5f) * TILESIZE;
+  }
+  else {
+    assert(false);
+  }
+
 
   for (std::size_t i = 0; i < SIZE; ++i) {
     for (std::size_t j = 0; j < SIZE; ++j) {
@@ -350,6 +474,22 @@ sf::Vector2f Map::getBankGoal() {
 
 sf::Vector2f Map::getGunStoreGoal() {
   return m_gunStoreGoal;
+}
+
+sf::Vector2f Map::getHomeGoal() {
+  return m_homeGoal;
+}
+
+sf::Vector2f Map::getClothingStoreGoal() {
+  return m_clothingStore;
+}
+
+sf::Vector2f Map::getAccompliceGoal() {
+  return m_accompliceGoal;
+}
+
+sf::Vector2f Map::getRocketStoreGoal() {
+  return m_rocketStoreGoal;
 }
 
 bool Map::checkPosition(std::vector<sf::Vector2i> vector, int x, int y) {
