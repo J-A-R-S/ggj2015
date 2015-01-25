@@ -72,6 +72,12 @@
   fixture.friction = 0.0f;
 
   m_body->CreateFixture(&fixture);
+
+  sf::SoundBuffer *buffer = resources.getSoundBuffer("car_engine.ogg");
+  m_sound.setBuffer(*buffer);
+  m_sound.setVolume(0);
+  m_sound.setLoop(true);
+  m_sound.play();
 }
 
 
@@ -134,6 +140,10 @@ static constexpr float TURN = 2.0f;
   m_body->SetLinearVelocity(vel);
 
   m_velocity = velocity;
+
+  // Set volume audio
+  float volume = m_body->GetLinearVelocity().Length() / 15.0f * 100;
+  m_sound.setVolume(volume);
 }
 
 /* virtual */ void Car::render(sf::RenderWindow& window) {
