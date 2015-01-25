@@ -96,7 +96,7 @@ int main() {
   group.addEntity(map);
 
   // add cars
-  Car car(events, resources, world);
+  HeroCar car(events, resources, world);
   group.addEntity(car);
 
   // add Scenario
