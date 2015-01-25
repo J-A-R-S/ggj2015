@@ -38,10 +38,9 @@ int main() {
   sf::RenderWindow window(sf::VideoMode(INITIAL_WIDTH, INITIAL_HEIGHT), "Bank Robbery for Dummies (version " GAME_VERSION ")");
   window.setKeyRepeatEnabled(false);
   window.setVerticalSyncEnabled(true);
-//   window.setFramerateLimit(0);
+  window.setFramerateLimit(0);
 
   game::Log::setLevel(game::Log::DEBUG);
-  game::Log::debug(game::Log::GENERAL, "Path install : %s\n", GAME_DATADIR);
 
   // add actions
   game::ActionSet actions;
@@ -101,12 +100,31 @@ int main() {
 
   // add Scenario
   Scenario scenario(events, resources);
+
   scenario.addStep(5.0f, "Great, that's a nice day.\nPerfect day to go robbing a bank !");
   scenario.addStep(5.0f, "But first, I need to get some stuff.");
   scenario.addStep(5.0f, "Let's go buy gloves and a balaclava so nobody will recognize me.",
       30.0, { (Map::SIZE - 1.5) * 256.0f, (Map::SIZE - 1.5) * 256.0f });
+
   scenario.addStep(5.0f, "Alright ! Now, I need a gun\nand ammunitions, just in case.",
-      30.0, { 4.5 * 256.0f, 9.5 * 256.0f });
+      30.0, map.getGunStoreGoal());
+
+  scenario.addStep(5.0f, "Mmmhhh. Now that I think about\nit. I should find a rocket launcher,\nit would be wiser.",
+      30.0, { (Map::SIZE - 10.5) * 256.0f, (Map::SIZE - 16.5) * 256.0f });
+
+  scenario.addStep(5.0f, "OK I'm ready ! I'm gonna met my\nfriend ??? that will help me.",
+      30.0, { 9.5 * 256.0f, 16.5 * 256.0f });
+
+  scenario.addStep(5.0f, "Hey ??? ! You got the car ready ?");
+  scenario.addStep(5.0f, "Yeah sure, but we have to fill up\nthe car with gas first.",
+      30.0, { 4.5 * 256.0f, (Map::SIZE - 1.5) * 256.0f });
+
+  scenario.addStep(5.0f, "Hurray ! We are ready to go rob\nthat bank ! \\o/",
+      30.0, map.getBankGoal());
+
+  scenario.addStep(5.0f, "Oh-oh. What do we do now ?",
+      30.0, { 1.5f * 256.0f, 1.5f * 256.0f });
+
   scenario.start();
   group.addEntity(scenario);
 
@@ -114,6 +132,7 @@ int main() {
   sf::Clock clock;
 
   sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, { 2.0f * INITIAL_WIDTH, 2.0f * INITIAL_HEIGHT });
+//   sf::View view({ 128.0f * Map::SIZE, 128.0f * Map::SIZE }, {Map::SIZE * INITIAL_WIDTH / 3, Map::SIZE * INITIAL_HEIGHT / 3 });
 
   events.registerHandler<HeroPositionEvent>([&view](game::EventType type, game::Event *event) {
     auto e = static_cast<HeroPositionEvent*>(event);

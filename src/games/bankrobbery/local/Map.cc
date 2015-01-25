@@ -189,6 +189,70 @@ void Map::generate(game::Random& random, b2World& world) {
   m_map[SIZE-2][SIZE-2].number = 4;
   m_map[SIZE-2][1].number = 3;
 
+  // set special building
+  int x, y;
+  x = random.computeUniformInteger(0, NUMBER_OF_STREETS-2);
+  y = random.computeUniformInteger(0, NUMBER_OF_STREETS-2);
+
+  std::vector<sf::Vector2i> positions;
+  positions.push_back({ x, y });
+
+  // set Bank
+  x = 2 + 3 * x;
+  y = 2 + 3 * y;
+  m_map[x][y].number = 3;
+  // Check if the street is clearly
+  if (m_map[x - 1][y].kind == STREET) {
+    m_bankGoal.x = (x - 1 + 0.5f) * TILESIZE;
+    m_bankGoal.y = (y + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y - 1].kind == STREET) {
+    m_bankGoal.x = (x + 0.5f) * TILESIZE;
+    m_bankGoal.y = (y - 1 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y + 2].kind == STREET) {
+    m_bankGoal.x = (x + 0.5f) * TILESIZE;
+    m_bankGoal.y = (y + 2 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x + 2][y + 1].kind == STREET) {
+    m_bankGoal.x = (x + 2 + 0.5f) * TILESIZE;
+    m_bankGoal.y = (y + 1 + 0.5f) * TILESIZE;
+  }
+  else {
+    assert(false);
+  }
+
+  // set gun store
+  do {
+    x = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+    y = random.computeUniformInteger(0, NUMBER_OF_STREETS-3);
+  } while (checkPosition(positions, x, y));
+  positions.push_back({ x, y });
+
+  x = 2 + 3 * x;
+  y = 2 + 3 * y;
+  m_map[x][y].number = 4;
+  // Check if the street is clearly
+  if (m_map[x - 1][y].kind == STREET) {
+    m_gunStoreGoal.x = (x - 1 + 0.5f) * TILESIZE;
+    m_gunStoreGoal.y = (y + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y - 1].kind == STREET) {
+    m_gunStoreGoal.x = (x + 0.5f) * TILESIZE;
+    m_gunStoreGoal.y = (y - 1 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x][y + 2].kind == STREET) {
+    m_gunStoreGoal.x = (x + 0.5f) * TILESIZE;
+    m_gunStoreGoal.y = (y + 2 + 0.5f) * TILESIZE;
+  }
+  else if (m_map[x + 2][y + 1].kind == STREET) {
+    m_gunStoreGoal.x = (x + 2 + 0.5f) * TILESIZE;
+    m_gunStoreGoal.y = (y + 1 + 0.5f) * TILESIZE;
+  }
+  else {
+    assert(false);
+  }
+
 
   for (std::size_t i = 0; i < SIZE; ++i) {
     for (std::size_t j = 0; j < SIZE; ++j) {
@@ -232,8 +296,8 @@ void Map::generate(game::Random& random, b2World& world) {
         float y1 = j * TILESIZE;
         float y2 = y1 + TILESIZE * 2;
 
-        float u = (block.number % 2) * BUILDINGSIZE;
-        float v = (block.number / 2) * BUILDINGSIZE;
+        float u = (block.number % 3) * BUILDINGSIZE;
+        float v = (block.number / 3) * BUILDINGSIZE;
 
         switch (block.kind) {
           case BUILDING:
@@ -284,4 +348,21 @@ void Map::update(float dt) {
 void Map::render(sf::RenderWindow& window) {
   window.draw(m_arrayStreet, m_roadTexture);
   window.draw(m_arrayBuilding, m_buildingTexture);
+}
+
+sf::Vector2f Map::getBankGoal() {
+  return m_bankGoal;
+}
+
+sf::Vector2f Map::getGunStoreGoal() {
+  return m_gunStoreGoal;
+}
+
+bool Map::checkPosition(std::vector<sf::Vector2i> vector, int x, int y) {
+  bool found = false;
+  for (std::size_t i = 0; i < vector.size() && !found; ++i) {
+    found = vector[i].x == x && vector[i].y == y;
+  }
+
+  return found;
 }
