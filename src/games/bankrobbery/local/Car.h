@@ -43,12 +43,40 @@ public:
   constexpr static float WIDTH = 128;
   constexpr static float HEIGHT = 64;
 
-  explicit Car(game::EventManager& events, game::ResourceManager& resources, b2World& world);
+  explicit Car(int car, game::ResourceManager& resources, b2World& world);
 
 
   virtual int priority() const override;
-  virtual void update(float dt) override;
   virtual void render(sf::RenderWindow& window) override;
+
+protected:
+  float getVelocity() const {
+    return m_velocity;
+  }
+
+  float getAngle() const {
+    return m_body->GetAngle();
+  }
+
+  void setVelocityAndAngle(float velocity, float angle);
+
+  float getAbsoluteVelocity() const;
+
+  sf::Vector2f getPosition() const;
+
+private:
+  const int m_car;
+  sf::Texture *m_texture;
+  b2Body *m_body;
+
+  float m_velocity;
+};
+
+class HeroCar : public Car {
+public:
+  HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world);
+
+  virtual void update(float dt) override;
 
   enum Movement {
     ACCELERATE,
@@ -56,9 +84,17 @@ public:
     CRUISE,
   };
 
-  void accelerate();
-  void brake();
-  void cruise();
+  void accelerate() {
+    m_movement = ACCELERATE;
+  }
+
+  void brake() {
+    m_movement = BRAKE;
+  }
+
+  void cruise() {
+    m_movement = CRUISE;
+  }
 
   enum Turn {
     LEFT,
@@ -66,24 +102,25 @@ public:
     NONE,
   };
 
-  void turnLeft();
-  void turnRight();
-  void turnNone();
+  void turnLeft() {
+    m_turn = LEFT;
+  }
+
+  void turnRight() {
+    m_turn = RIGHT;
+  }
+
+  void turnNone() {
+    m_turn = NONE;
+  }
 
 private:
   game::EventManager& m_events;
 
-  sf::Texture *m_texture;
-  b2Body *m_body;
-
   Movement m_movement;
   Turn m_turn;
 
-  float m_velocity;
-  float m_angle;
-
   sf::Sound m_sound;
-
 };
 
 #endif // LOCAL_CAR_H

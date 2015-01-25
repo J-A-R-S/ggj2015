@@ -29,15 +29,14 @@
 #include "Constants.h"
 #include "Events.h"
 
-/* explicit */ Car::Car(game::EventManager& events, game::ResourceManager& resources, b2World& world)
-  : m_events(events)
+Car::Car(int car, game::ResourceManager& resources, b2World& world)
+  : m_car(car)
   , m_texture(nullptr)
   , m_body(nullptr)
-  , m_movement(CRUISE)
-  , m_turn(NONE)
   , m_velocity(0)
-  , m_angle(0)
 {
+  assert(0 <= car && car < 10);
+
   m_texture = resources.getTexture("sheet_car.png");
   m_texture->setSmooth(true);
 
@@ -72,12 +71,6 @@
   fixture.friction = 0.0f;
 
   m_body->CreateFixture(&fixture);
-
-  sf::SoundBuffer *buffer = resources.getSoundBuffer("car_engine.ogg");
-  m_sound.setBuffer(*buffer);
-  m_sound.setVolume(0);
-  m_sound.setLoop(true);
-  m_sound.play();
 }
 
 
@@ -85,20 +78,74 @@ int Car::priority() const {
   return 20;
 }
 
+void Car::render(sf::RenderWindow& window) {
+  auto pos = m_body->GetPosition();
+
+  sf::IntRect textureRect;
+  textureRect.left = (m_car % 4) * WIDTH;
+  textureRect.top = (m_car / 4) * HEIGHT;
+  textureRect.width = WIDTH;
+  textureRect.height = HEIGHT;
+
+  sf::Sprite sprite(*m_texture);
+  sprite.setTextureRect(textureRect);
+  sprite.setOrigin(WIDTH / 2.0f, HEIGHT / 2.0f);
+  sprite.setPosition(pos.x / BOX2D_SCALE, pos.y / BOX2D_SCALE);
+  sprite.rotate(m_body->GetAngle() * (180 / M_PI));
+
+  window.draw(sprite);
+}
+
+void Car::setVelocityAndAngle(float velocity, float angle) {
+  m_body->SetTransform(m_body->GetPosition(), angle);
+  m_body->SetAngularVelocity(0.0f);
+
+  b2Rot rot(angle);
+  b2Vec2 vel(velocity, 0.0f);
+  vel = b2Mul(rot, vel);
+
+  m_body->SetLinearVelocity(vel);
+
+  m_velocity = velocity;
+}
+
+float Car::getAbsoluteVelocity() const {
+  return m_body->GetLinearVelocity().Length();
+}
+
+sf::Vector2f Car::getPosition() const {
+  auto pos = m_body->GetPosition();
+  return { pos.x / BOX2D_SCALE, pos.y / BOX2D_SCALE };
+}
+
+
+
+HeroCar::HeroCar(game::EventManager& events, game::ResourceManager& resources, b2World& world)
+  : Car(5, resources, world)
+  , m_events(events)
+  , m_movement(CRUISE)
+  , m_turn(NONE)
+{
+  sf::SoundBuffer *buffer = resources.getSoundBuffer("car_engine.ogg");
+  m_sound.setBuffer(*buffer);
+  m_sound.setVolume(0);
+  m_sound.setLoop(true);
+  m_sound.play();
+}
+
 static constexpr float HOP = 8.0f;
 static constexpr float TURN = 2.0f;
 
-/* virtual */ void Car::update(float dt) {
-  auto pos = m_body->GetPosition();
+void HeroCar::update(float dt) {
+  auto pos = getPosition();
 
   HeroPositionEvent event;
-  event.pos.x = pos.x / BOX2D_SCALE;
-  event.pos.y = pos.y / BOX2D_SCALE;
+  event.pos = pos;
   m_events.triggerEvent(&event);
 
-  float angle = m_body->GetAngle();
-  float abs_velocity = m_body->GetLinearVelocity().Length();
-  float velocity = m_velocity > 0 ? abs_velocity : - abs_velocity;
+  float angle = getAngle();
+  float abs_velocity = getAbsoluteVelocity();
+  float velocity = getVelocity() > 0 ? abs_velocity : - abs_velocity;
 
   switch (m_movement) {
     case ACCELERATE:
@@ -136,60 +183,9 @@ static constexpr float TURN = 2.0f;
       break;
   }
 
-  m_body->SetTransform(m_body->GetPosition(), angle);
-  m_body->SetAngularVelocity(0.0f);
-
-  b2Rot rot(angle);
-  b2Vec2 vel(velocity, 0.0f);
-  vel = b2Mul(rot, vel);
-
-  m_body->SetLinearVelocity(vel);
-
-  m_velocity = velocity;
+  setVelocityAndAngle(velocity, angle);
 
   // Set volume audio
-  float volume = m_body->GetLinearVelocity().Length() / 15.0f * 100;
+  float volume = getAbsoluteVelocity() / 15.0f * 100;
   m_sound.setVolume(volume);
-}
-
-/* virtual */ void Car::render(sf::RenderWindow& window) {
-  auto pos = m_body->GetPosition();
-
-  sf::IntRect textureRect;
-  textureRect.left = 1 * WIDTH;
-  textureRect.top = 1 * HEIGHT;
-  textureRect.width = WIDTH;
-  textureRect.height = HEIGHT;
-
-  sf::Sprite sprite(*m_texture);
-  sprite.setTextureRect(textureRect);
-  sprite.setOrigin(WIDTH / 2.0f, HEIGHT / 2.0f);
-  sprite.setPosition(pos.x / BOX2D_SCALE, pos.y / BOX2D_SCALE);
-  sprite.rotate(m_body->GetAngle() * (180 / M_PI));
-
-  window.draw(sprite);
-}
-
-void Car::accelerate() {
-  m_movement = ACCELERATE;
-}
-
-void Car::brake() {
-  m_movement = BRAKE;
-}
-
-void Car::cruise() {
-  m_movement = CRUISE;
-}
-
-void Car::turnLeft() {
-  m_turn = LEFT;
-}
-
-void Car::turnRight() {
-  m_turn = RIGHT;
-}
-
-void Car::turnNone() {
-  m_turn = NONE;
 }
