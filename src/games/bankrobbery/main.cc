@@ -173,7 +173,8 @@ int main() {
   scenario.addStep(Scenario::Flo, 5.0f, "Hurray! We are ready to go rob\nthat bank! \\o/",
       TIME_FOR_MISSION, map.getBankGoal());
 
-  scenario.addStep(Scenario::Flo, 5.0f, "Oh-oh. What do we do now?",
+  scenario.addStep(Scenario::Flo, 5.0f, "Oh-oh. What do we do now?");
+  scenario.addStep(Scenario::Roxy, 5.0f, "Time to go home!",
       TIME_FOR_MISSION, map.getHomeGoal());
 
   scenario.start();
