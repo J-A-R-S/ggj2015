@@ -22,20 +22,19 @@
 #include <game/graphics/Entity.h>
 #include <game/graphics/Resource.h>
 
-struct Step {
-  float message_timer;
-  std::string message;
-  bool active;
-  float target_timer;
-  sf::Vector2f target;
-};
+struct Step;
 
 class Scenario : public game::Entity {
 public:
+  enum Character {
+    Flo,
+    Roxy,
+  };
+
   Scenario(game::EventManager& events, game::ResourceManager& resources);
 
-  void addStep(float message_timer, const std::string& message);
-  void addStep(float message_timer, const std::string& message, float target_timer, const sf::Vector2f& target);
+  void addStep(Character character, float message_timer, const std::string& message);
+  void addStep(Character character, float message_timer, const std::string& message, float target_timer, const sf::Vector2f& target);
   void start();
 
   virtual void update(float dt) override;
@@ -56,8 +55,20 @@ private:
   float m_target_timer;
   sf::Vector2f m_target;
   sf::Vector2f m_hero;
+  Character m_character;
 
   sf::Font *m_font;
+  sf::Texture *m_floTexture;
+  sf::Texture *m_roxyTexture;
+};
+
+struct Step {
+  float message_timer;
+  std::string message;
+  bool active;
+  float target_timer;
+  sf::Vector2f target;
+  Scenario::Character character;
 };
 
 
