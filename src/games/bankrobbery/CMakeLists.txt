@@ -11,7 +11,6 @@ add_executable(bankrobbery
 target_link_libraries(bankrobbery
   gamebase0
   gamegraphics0
-  gamemodel0
   ${BOX2D_LIBRARIES}
 )
 
