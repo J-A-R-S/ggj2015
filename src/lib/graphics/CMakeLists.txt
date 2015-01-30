@@ -14,10 +14,22 @@ add_library(gamegraphics0 SHARED
   ${LIBGAMEGRAPHICS0_SRC}
 )
 
-target_link_libraries(gamegraphics0
-  ${Boost_LIBRARIES}
-  ${SFML2_LIBRARIES}
-)
+if(WIN32)
+  target_link_libraries(gamegraphics0
+    gamebase0
+    ${Boost_LIBRARIES}
+    sfml-audio
+    sfml-system
+    sfml-network
+    sfml-graphics
+    sfml-window
+  )
+else(WIN32)
+  target_link_libraries(gamegraphics0
+    ${Boost_LIBRARIES}
+    ${SFML2_LIBRARIES}
+  )
+endif(WIN32)
 
 set_target_properties(gamegraphics0
   PROPERTIES
@@ -25,8 +37,11 @@ set_target_properties(gamegraphics0
   SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}
 )
 
-install(
-  TARGETS gamegraphics0
-  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
-)
+if(UNIX)
+  install(
+    TARGETS gamegraphics0
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  )
+endif(UNIX)
+

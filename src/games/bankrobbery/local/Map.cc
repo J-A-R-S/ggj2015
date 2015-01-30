@@ -21,6 +21,10 @@
 #include <cassert>
 #include <game/base/Log.h>
 
+#ifdef _WIN32
+#define M_PI (3.14159265359)
+#endif
+
 #include "Constants.h"
 
 Map::Map(game::ResourceManager &resources)
